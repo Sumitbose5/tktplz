@@ -1,0 +1,183 @@
+{
+  "version": "5",
+  "dialect": "mysql",
+  "id": "0006_migrate_totalScreens_to_json",
+  "prevId": "0005_snapshot",
+  "tables": {
+    "halls": {
+      "name": "halls",
+      "schema": {
+        "id": {
+          "name": "id",
+          "type": "varchar(36)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(100)",
+          "notNull": true
+        },
+        "area_name": {
+          "name": "area_name",
+          "type": "varchar(255)"
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "decimal(10,7)"
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "decimal(10,7)"
+        },
+        "seatLayoutId": {
+          "name": "seat_layout_id",
+          "type": "varchar(36)",
+          "references": {
+            "table": "seats",
+            "column": "id"
+          }
+        },
+        "city": {
+          "name": "city",
+          "type": "varchar(100)"
+        },
+        "state": {
+          "name": "state",
+          "type": "varchar(100)"
+        },
+        "pincode": {
+          "name": "pincode",
+          "type": "varchar(20)"
+        },
+        "totalScreens": {
+          "name": "total_screens",
+          "type": "json"
+        },
+        "isVerified": {
+          "name": "isVerified",
+          "type": "boolean",
+          "default": false
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(20)",
+          "default": "active"
+        },
+        "verificationStatus": {
+          "name": "verification_status",
+          "type": "varchar(255)",
+          "default": "pending"
+        },
+        "createdById": {
+          "name": "created_by_id",
+          "type": "varchar(36)",
+          "notNull": true
+        },
+        "createdByType": {
+          "name": "created_by_type",
+          "type": "varchar(20)",
+          "notNull": true,
+          "default": "organiser"
+        },
+        "createdAt": {
+          "name": "created_at",
+          "type": "timestamp",
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "(updated_at)",
+          "type": "timestamp",
+          "default": "CURRENT_TIMESTAMP",
+          "onUpdate": "CURRENT_TIMESTAMP"
+        }
+      },
+      "columns": [
+        {
+          "name": "id",
+          "type": "varchar(36)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        {
+          "name": "name",
+          "type": "varchar(100)",
+          "notNull": true
+        },
+        {
+          "name": "area_name",
+          "type": "varchar(255)"
+        },
+        {
+          "name": "latitude",
+          "type": "decimal(10,7)"
+        },
+        {
+          "name": "longitude",
+          "type": "decimal(10,7)"
+        },
+        {
+          "name": "seat_layout_id",
+          "type": "varchar(36)",
+          "references": {
+            "table": "seats",
+            "column": "id"
+          }
+        },
+        {
+          "name": "city",
+          "type": "varchar(100)"
+        },
+        {
+          "name": "state",
+          "type": "varchar(100)"
+        },
+        {
+          "name": "pincode",
+          "type": "varchar(20)"
+        },
+        {
+          "name": "total_screens",
+          "type": "json"
+        },
+        {
+          "name": "isVerified",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "status",
+          "type": "varchar(20)",
+          "default": "active"
+        },
+        {
+          "name": "verification_status",
+          "type": "varchar(255)",
+          "default": "pending"
+        },
+        {
+          "name": "created_by_id",
+          "type": "varchar(36)",
+          "notNull": true
+        },
+        {
+          "name": "created_by_type",
+          "type": "varchar(20)",
+          "notNull": true,
+          "default": "organiser"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp",
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "(updated_at)",
+          "type": "timestamp",
+          "default": "CURRENT_TIMESTAMP",
+          "onUpdate": "CURRENT_TIMESTAMP"
+        }
+      ]
+    }
+  }
+} 
