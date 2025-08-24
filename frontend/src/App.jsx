@@ -1,4 +1,5 @@
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import { Route, BrowserRouter as Router, Routes, useSearchParams, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 import { HomePage } from './pages/home/HomePage'
 import { LoginPage } from './pages/auth/LoginPage'
 import { RegisterPage } from './pages/auth/RegisterPage'
@@ -23,6 +24,7 @@ import { AdminRoute } from './pages/admin-auth/AdminRoute'
 import { AdminLayout } from './layout/AdminLayout'
 import { AdminDashboard } from './pages/admin/Dashboard'
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { InviteAdmin } from './pages/admin/InviteAdmin'
 import { CreateEvent } from './pages/org-pages/CreateEvent'
 import { TermsAndConditions } from './components/Other/Terms&Condition'
 import { OrganiserManagement } from './pages/admin/Organiser-Manag'
@@ -37,6 +39,38 @@ import EventInfo from './pages/home/EventInfo';
 import OpenZonesSelect from './pages/home/OpenZonesSelect';
 import BookingSummary from './pages/home/BookingSummary';
 import RegisterParticipants from './pages/home/RegisterParticipants';
+import SuccessfulPayment from './pages/home/SuccessfulPayment';
+import PaymentFailure from './pages/home/PaymentFailure';
+import { YourOrders } from './pages/home/YourOrders';
+import OrderDetails from './pages/home/OrderDetails';
+import Analytics from './pages/org-pages/Analytics'
+import AnalyticsDetails from './pages/org-pages/AnalyticsDetails'
+import ScanQR from './pages/org-pages/ScanQR'
+import ReportIssue from './pages/home/ReportIssue'
+import Support from './pages/admin/Support'
+import IssueDetails from './pages/admin/IssueDetails'
+import CategorySelect from './pages/home/CategorySelect'
+import Financials from './pages/admin/Financials'
+import PayoutDetails from './pages/admin/PayoutDetails'
+import IncomeReceipts from './pages/org-pages/IncomeReceipts'
+import ReceiptDetails from './pages/org-pages/ReceiptDetails'
+import Notifications from './pages/home/Notifications'
+import PrivacyPolicy from './pages/home/PrivacyPolicy'
+
+const LoginPageRoute = () => {
+  const { showLoginModal } = useModal();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const redirect = searchParams.get('redirect');
+    showLoginModal(redirect);
+    // Redirect to home page to clean up URL
+    navigate('/', { replace: true });
+  }, [showLoginModal, searchParams, navigate]);
+  
+  return <HomePage />;
+};
 
 const AppContent = () => {
   const { modalType, isSidebarOpen } = useModal();
@@ -52,6 +86,7 @@ const AppContent = () => {
 
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPageRoute />} />
         <Route path="/event/:eventId" element={<EventInfo />} />
         <Route path="/register-participants/:eventId" element={<RegisterParticipants />} />
         <Route path="/forgot-pswd" element={<ForgotPassword />} />
@@ -67,6 +102,14 @@ const AppContent = () => {
         <Route path="/book/s/:eventId" element={<SeatStructure />} />
         <Route path="/book/open/:eventId" element={<OpenZonesSelect />} />
         <Route path="/booking-summary/:id" element={<BookingSummary />} />
+        <Route path="/payment-success" element={<SuccessfulPayment />} /> 
+        <Route path="/payment-failure" element={<PaymentFailure />} />
+        <Route path='/your-orders' element={<YourOrders />} />
+        <Route path='/order-details/:orderId' element={<OrderDetails />} />
+        <Route path='report-issue' element={<ReportIssue/>} />
+        <Route path='category/:subtype' element={<CategorySelect />} />
+        <Route path='notifications' element={<Notifications />} />
+        <Route path='/privacy-policy' element={<PrivacyPolicy />} />
 
         {/* Protected Organiser Routes */}
         <Route
@@ -81,6 +124,12 @@ const AppContent = () => {
           <Route path='create-event' element={<CreateEvent/>} />
           <Route path='events' element={<MyEvents/>} />
           <Route path='event-details/:eventId' element={<EventPage/>} />
+          <Route path='analytics' element={<Analytics/>} />
+          <Route path='analytics-details/:eventId' element={<AnalyticsDetails/>} />
+          <Route path='scan-qr' element={<ScanQR/>} />
+          <Route path='report-issue' element={<ReportIssue/>} />
+          <Route path='invoice' element={<IncomeReceipts/>} />
+          <Route path='receipt/:id' element={<ReceiptDetails />} />
         </Route>
 
         {/* Admin Protected Routes */}
@@ -89,7 +138,7 @@ const AppContent = () => {
           element={
             <AdminRoute>
               <AdminLayout />
-            </AdminRoute>
+            </AdminRoute> 
           }
         >
           <Route path="dashboard" element={<AdminDashboard />} />
@@ -98,6 +147,12 @@ const AppContent = () => {
           <Route path="hall-management" element={<HallManagement/>} />
           <Route path="view-hall/:hallId" element={<ViewHall/>} />
           <Route path="seat-structure/:screenId/:screenNo/:eventId/:eventName" element={<SeatStructure />} />
+          <Route path="invite-admin" element={<InviteAdmin />} />
+          <Route path="support" element={<Support />} />
+          <Route path="support/issue/:id" element={<IssueDetails />} />
+          <Route path='financials' element={<Financials />} />
+          <Route path='payout/:id' element={<PayoutDetails />} />
+          
         </Route>
 
       </Routes>

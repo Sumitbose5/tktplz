@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useBookingStore } from '../../store/bookingStore';
+import { useAuth } from '../../context/AuthContext';
+import { useModal } from '../../context/ModalContext';
 import { v4 as uuidv4 } from 'uuid';
 
 const fetchTicketCategories = async (eventId) => {
@@ -14,10 +16,12 @@ const fetchTicketCategories = async (eventId) => {
     return {
       categories: data.result?.price || [],
       showTime: data.result?.event?.scheduleStart
-        ? new Date(data.result.event.scheduleStart).toLocaleDateString("en-GB", {
+        ? new Date(data.result.event.scheduleStart).toLocaleString("en-GB", {
             day: "2-digit",
             month: "long",
             year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
           })
         : "",
       eventDetails: data.result?.event || null
@@ -31,6 +35,8 @@ export default function OpenZonesSelect() {
   const { eventId } = useParams();
   const navigate = useNavigate();
   const setBookingInfo = useBookingStore((state) => state.setBookingInfo);
+  const { user } = useAuth();
+  const { showLoginModal } = useModal();
   const [categories, setCategories] = useState([]);
   const [showTime, setShowTime] = useState("");
   const [eventDetails, setEventDetails] = useState(null);
@@ -61,6 +67,16 @@ export default function OpenZonesSelect() {
       const prevVal = Number(prev[id]) || 0;
       const safeMax = typeof max === 'number' && !isNaN(max) ? max : 9999;
       const newVal = Math.max(0, Math.min(prevVal + delta, safeMax));
+      
+      // If selecting a new category (delta > 0 and prevVal === 0), clear all other categories
+      if (delta > 0 && prevVal === 0) {
+        const clearedState = {};
+        categories.forEach(cat => {
+          clearedState[cat.id] = cat.id === id ? newVal : 0;
+        });
+        return clearedState;
+      }
+      
       return { ...prev, [id]: newVal };
     });
   };
@@ -82,112 +98,146 @@ export default function OpenZonesSelect() {
     }));
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-white to-indigo-100">
-      <div className="max-w-xl w-full mx-auto mt-10 bg-white rounded-2xl shadow-2xl p-8 relative">
-        <h2 className="text-3xl font-extrabold text-indigo-800 mb-2 text-center tracking-tight drop-shadow-sm font-mont">
-          Select Your Tickets
-        </h2>
-        <div className="text-center text-gray-500 mb-8">
-          <span className="inline-block px-4 py-1 bg-blue-100 text-blue-700 rounded-full font-semibold text-base shadow-sm">
-            Show Date: {showTime}
-          </span>
-        </div>
-        {loading ? (
-          <div className="text-center py-10 text-gray-400">Loading...</div>
-        ) : (
-          <div className="space-y-6">
-            {categories.map((cat, idx) => {
-              const available = (Number(cat.numberOfTickets) || 0) - (Number(cat.ticketsSold) || 0);
-              const isSelected = (selected[cat.id] || 0) > 0;
-              return (
-                <div
-                  key={cat.id}
-                  className={`flex items-center justify-between border rounded-xl px-5 py-4 bg-gray-50 transition-all duration-200 shadow-sm relative group ${isSelected ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/40'}`}
-                >
-                  <div>
-                    <div className="font-bold text-lg text-gray-900 flex items-center gap-2">
-                      {cat.type}
-                      {isSelected && <span className="ml-2 px-2 py-0.5 text-xs rounded bg-blue-600 text-white font-semibold">Selected</span>}
-                    </div>
-                    <div className="text-gray-500 text-sm mt-1">
-                      <span className="font-semibold text-blue-700">₹{Number(cat.price).toLocaleString()}</span> &middot;{' '}
-                      <span className={available === 0 ? 'text-red-500 font-semibold' : ''}>{available} available</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      className={`w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 text-2xl font-bold text-gray-600 flex items-center justify-center transition-all duration-150 border border-gray-300 shadow-sm active:scale-90 focus:outline-none focus:ring-2 focus:ring-blue-300 ${selected[cat.id] === 0 ? 'opacity-60 cursor-not-allowed' : 'hover:scale-105'}`}
-                      onClick={() => handleChange(cat.id, -1, available)}
-                      disabled={selected[cat.id] === 0}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
-                      </svg>
-                    </button>
-                    <span className="w-8 text-center text-lg font-semibold text-gray-800">
-                      {selected[cat.id] || 0}
-                    </span>
-                    <button
-                      className={`w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 text-2xl font-bold text-white flex items-center justify-center transition-all duration-150 border border-blue-600 shadow-sm active:scale-90 focus:outline-none focus:ring-2 focus:ring-blue-300 ${selected[cat.id] >= available ? 'opacity-60 cursor-not-allowed' : 'hover:scale-105'}`}
-                      onClick={() => handleChange(cat.id, 1, available)}
-                      disabled={selected[cat.id] >= available}
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m-7-7h14" />
-                      </svg>
-                    </button>
-                  </div>
-                  {idx < categories.length - 1 && <div className="absolute left-0 right-0 bottom-0 h-px bg-gray-200 group-hover:bg-blue-200 transition-all" style={{ marginLeft: 24, marginRight: 24 }} />}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Sticky summary bar for mobile */}
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 border-t border-blue-100 shadow-lg py-4 px-4 md:static md:shadow-none md:border-none md:bg-transparent md:p-0 mt-8">
-          <div className="max-w-xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-            <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
-              <span className="text-lg font-semibold text-gray-700">Total Tickets: <span className="text-blue-700">{totalTickets}</span></span>
-              <span className="text-lg font-semibold text-gray-700">Total Price: <span className="text-blue-700">₹{totalPrice.toLocaleString()}</span></span>
+    <div className="min-h-screen bg-gray-100">
+      {/* Logo outside the box */}
+      <div className="absolute top-4 left-4 z-10">
+        <img 
+          src="/images/logo2.PNG" 
+          alt="tktplz" 
+          className="h-8 w-auto"
+        />
+      </div>
+      
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white rounded-xl shadow-lg">
+          {/* Header */}
+          <div className="p-6 pb-4">
+            <div className="flex items-center gap-3 mb-6">
+              <button 
+                onClick={() => navigate(-1)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <div>
+                <h1 className="text-lg font-semibold text-gray-900">{eventDetails?.name || 'Event'}</h1>
+                <p className="text-sm text-gray-500">{showTime}</p>
+              </div>
             </div>
-            <button
-              className={`mt-2 md:mt-0 w-full md:w-auto py-3 px-8 rounded-lg text-lg font-bold transition-all duration-200 shadow-md md:shadow-none ${totalTickets > 0
-                  ? "bg-blue-600 hover:bg-blue-700 text-white"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }`}
-              disabled={totalTickets === 0}
-              onClick={() => {
-                setBookingInfo({
-                  categories: selectedCategories,
-                  price: totalPrice,
-                  numberOfTickets: totalTickets,
-                  bookingId,
-                  eventId,
-                  eventDetails: eventDetails ? {
-                    eventName: eventDetails.name,
-                    location: eventDetails.location,
-                    city: eventDetails.city,
-                    state: eventDetails.state,
-                    area_name: eventDetails.area_name,
-                    type: eventDetails.type,
-                    date: eventDetails.scheduleStart
-                      ? new Date(eventDetails.scheduleStart).toLocaleString('en-IN', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })
-                      : undefined,
-                  } : { eventId },
-                });
+          <h2 className="text-base font-semibold text-gray-700 mb-6">Select Tickets</h2>
+          
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {categories.map((cat) => {
+                const available = (Number(cat.numberOfTickets) || 0) - (Number(cat.ticketsSold) || 0);
+                const isSelected = (selected[cat.id] || 0) > 0;
+                const isDisabled = available === 0;
+                
+                return (
+                  <div key={cat.id} className="flex items-center justify-between py-2">
+                    <div>
+                      <h3 className="text-base font-medium text-gray-900">{cat.type}</h3>
+                      <p className="text-sm text-gray-500">₹{Number(cat.price).toLocaleString()}</p>
+                    </div>
+                    
+                    <div className="flex items-center gap-4">
+                      <button
+                        className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-medium ${
+                          selected[cat.id] === 0 || isDisabled
+                            ? 'border-gray-200 text-gray-300 cursor-not-allowed'
+                            : 'border-gray-400 text-gray-600 hover:border-gray-500 hover:bg-gray-50'
+                        }`}
+                        onClick={() => handleChange(cat.id, -1, available)}
+                        disabled={selected[cat.id] === 0 || isDisabled}
+                      >
+                        −
+                      </button>
+                      
+                      <span className="w-6 text-center text-base font-semibold text-gray-900">
+                        {selected[cat.id] || 0}
+                      </span>
+                      
+                      <button
+                        className={`w-8 h-8 rounded-full border flex items-center justify-center text-sm font-medium ${
+                          selected[cat.id] >= available || isDisabled
+                            ? 'border-gray-200 text-gray-300 cursor-not-allowed'
+                            : 'border-gray-400 text-gray-600 hover:border-gray-500 hover:bg-gray-50'
+                        }`}
+                        onClick={() => handleChange(cat.id, 1, available)}
+                        disabled={selected[cat.id] >= available || isDisabled}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        
+        {/* Bottom Button */}
+        <div className="p-6 pt-6">
+          <button
+            className={`w-full py-4 rounded-lg font-semibold text-base transition-colors flex items-center justify-between ${
+              totalTickets > 0
+                ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md'
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+            }`}
+            disabled={totalTickets === 0}
+            onClick={() => {
+              if (totalTickets === 0) return;
+              setBookingInfo({
+                categories: selectedCategories,
+                price: totalPrice,
+                numberOfTickets: totalTickets,
+                bookingId,
+                eventId,
+                eventDetails: eventDetails ? {
+                  eventName: eventDetails.name,
+                  poster: eventDetails.posterUrl,
+                  location: eventDetails.location,
+                  city: eventDetails.city,
+                  state: eventDetails.state,
+                  area_name: eventDetails.area_name,
+                  type: eventDetails.type,
+                  date: eventDetails.scheduleStart
+                    ? new Date(eventDetails.scheduleStart).toLocaleString('en-IN', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                    : undefined,
+                } : { eventId },
+                eventStart: eventDetails.scheduleStart,
+                eventEnd: eventDetails.scheduleEnd
+              });
+              if (!user) {
+                showLoginModal(`/booking-summary/${bookingId}`);
+              } else {
                 navigate(`/booking-summary/${bookingId}`);
-              }}
-            >
-              Proceed to Book
-            </button>
-          </div>
+              }
+            }}
+          >
+            <span className="text-base ml-3">
+              {totalTickets} Ticket{totalTickets !== 1 ? 's' : ''} | ₹{totalPrice.toLocaleString()}
+            </span>
+            <span className="flex items-center gap-2 mr-2">
+              Proceed
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+          </button>
+        </div>
         </div>
       </div>
     </div>

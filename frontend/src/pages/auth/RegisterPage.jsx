@@ -14,9 +14,9 @@ export const RegisterPage = () => {
 
     const [formData, setFormData] = useState({ username: "", email: "" });
     const [loading, setLoading] = useState(false);
-    const { showLoginModal, hideModal, showOTPModal } = useModal();
+    const { showLoginModal, hideModal, showOTPModal, redirectUrl } = useModal();
     const modalRef = useRef();
-    const { setEmailData } = useAuth();
+    const { setEmailData, setUser } = useAuth();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -51,6 +51,7 @@ export const RegisterPage = () => {
                 setTimeout(() => { // Optional delay for better UI experience
                     setLoading(false);
                     setEmailData(email);
+                    setUser(data.userData);
                     showOTPModal();
                     toast.success("OTP sent to your email")
                 }, 2000);

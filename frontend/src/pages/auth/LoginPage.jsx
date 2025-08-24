@@ -1,6 +1,6 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { FcGoogle } from "react-icons/fc";
 import { MdPhoneAndroid } from "react-icons/md";
@@ -14,9 +14,19 @@ export const LoginPage = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const modalRef = useRef();
-  const { showRegisterModal, hideModal, showOTPModal } = useModal();
+  const { showRegisterModal, hideModal, showOTPModal, redirectUrl } = useModal();
   const [loading, setLoading] = useState(false);
   const { setEmailData, setUser } = useAuth();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    // Parse redirect parameter from URL when component mounts
+    const redirect = searchParams.get('redirect');
+    if (redirect && !redirectUrl) {
+      // Update modal context with redirect URL if not already set
+      // This handles direct visits to /login?redirect=...
+    }
+  }, [searchParams, redirectUrl]);
 
   const login = async (e) => {
     e.preventDefault();

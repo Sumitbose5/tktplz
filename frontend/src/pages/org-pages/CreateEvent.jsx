@@ -64,7 +64,7 @@ export const CreateEvent = () => {
             eventInstructions: parsedData.eventInstructions || "",
             description: parsedData.description || "",
             start: parsedData.start || "",
-            end: parsedData.end || "",
+            end: parsedData.end || "", 
             bookingCutOffType: parsedData.bookingCutOffType || "",
             bookingCutoffMinutesBeforeStart: parsedData.bookingCutoffMinutesBeforeStart || 0,
             bookingCutoffCustomTime: parsedData.bookingCutoffCustomTime || "",
@@ -77,8 +77,11 @@ export const CreateEvent = () => {
             poster: parsedData.poster || null,
             posterPreview: parsedData.posterPreview || "",
             posterBase64: parsedData.posterBase64 || "",
-            eligibility_age: parsedData.eligibility_age || 0,
+            eligibility_age: parsedData.eligibility_age || "",
             genre: parsedData.genre || "",
+            language: parsedData.language || "",
+            ratingCode: parsedData.ratingCode || "",
+            ticketsCancellable: parsedData.ticketsCancellable || false,
             isOnline: eventMode === "Online" ? true : false,
             eligibility_criteria: parsedData.eligibility_criteria || "",
             registrationFields: parsedData.registrationFields || [
@@ -122,6 +125,18 @@ export const CreateEvent = () => {
             }
             if (selectedScreen) {
                 jsonData.screenID = selectedScreen;
+            }
+            // Convert eligibility_age to number
+            jsonData.eligibility_age = parseInt(jsonData.eligibility_age) || 0;
+            // Convert dates to UTC
+            if (jsonData.start) {
+                jsonData.start = new Date(jsonData.start).toISOString();
+            }
+            if (jsonData.end) {
+                jsonData.end = new Date(jsonData.end).toISOString();
+            }
+            if (jsonData.bookingCutoffCustomTime) {
+                jsonData.bookingCutoffCustomTime = new Date(jsonData.bookingCutoffCustomTime).toISOString();
             }
             // Remove file and base64 from payload
             delete jsonData.poster;
@@ -336,8 +351,8 @@ export const CreateEvent = () => {
                         body: JSON.stringify({
                             hallID: selectedHall,
                             screenID: selectedScreen,
-                            start: formData.start,
-                            end: formData.end
+                            start: new Date(formData.start).toISOString(),
+                            end: new Date(formData.end).toISOString()
                         })
                     });
                     const data = await res.json();
@@ -367,10 +382,12 @@ export const CreateEvent = () => {
 
     const isStepTwoValid = () => {
         const commonFields = formData.start && formData.end && formData.description && formData.eventInstructions;
+        const mandatoryFields = formData.language && formData.ratingCode && formData.eligibility_age !== "" && (formData.ticketsCancellable === true || formData.ticketsCancellable === false);
 
         if (formData.type === "Online") {
             return (
                 commonFields &&
+                mandatoryFields &&
                 formData.onlineDetails.link &&
                 formData.onlineDetails.platform &&
                 formData.maxParticipantAllowed !== "" &&
@@ -380,7 +397,7 @@ export const CreateEvent = () => {
         }
 
         if (formData.type === "Seating") {
-            return commonFields && formData.seatingDetails.hall && formData.posterPreview;
+            return commonFields && mandatoryFields && formData.seatingDetails.hall && formData.posterPreview;
         }
 
         if (formData.type === "Registration" || formData.type === "Open") {
@@ -388,6 +405,7 @@ export const CreateEvent = () => {
                 // For online registration, skip location-related checks
                 return (
                     commonFields &&
+                    mandatoryFields &&
                     formData.maxParticipantAllowed !== "" &&
                     formData.posterPreview
                 );
@@ -395,9 +413,10 @@ export const CreateEvent = () => {
                 // For offline registration, require location details
                 return (
                     commonFields &&
+                    mandatoryFields &&
                     formData.location &&
                     formData.city &&
-                    formData.state &&
+                    formData.state && 
                     formData.area_name &&
                     formData.pin !== "" &&
                     formData.maxParticipantAllowed !== "" &&
@@ -462,58 +481,77 @@ export const CreateEvent = () => {
     const getTotalZoneParticipants = (zones) => zones.reduce((sum, z) => sum + Number(z.participants || 0), 0);
 
     const renderStepOne = () => (
-        <div className="space-y-6">
-            <h2 className="text-2xl font-semibold text-center">Step 1: Event Basics</h2>
-            <input
-                type="text"
-                placeholder="Event Name"
-                value={formData.eventName}
-                onChange={(e) => setFormData({ ...formData, eventName: e.target.value })}
-                className="w-full border rounded-xl p-3 outline-none"
-            />
-
-            <div>
-                <p className="font-medium mb-2">Event Type</p>
-                <div className="flex gap-4">
-                    {eventTypes.map(({ name, icon: Icon }) => (
-                        <button
-                            key={name}
-                            onClick={() => handleTypeSelect(name)}
-                            className={`p-4 border rounded-xl flex items-center gap-2 cursor-pointer ${formData.type === name ? "bg-blue-100 border-blue-600" : ""
-                                }`}
-                        >
-                            <Icon /> {name}
-                        </button>
-                    ))}
-                </div>
+        <div className="space-y-8">
+            <div className="text-center">
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">Event Basics</h2>
+                <p className="text-gray-600">Let's start with the fundamentals of your event</p>
             </div>
 
-            {formData.type && (
+            <div className="space-y-6">
                 <div>
-                    <p className="font-medium mb-2">Subtype</p>
-                    <div className="flex gap-3 flex-wrap">
-                        {subTypes[formData.type].map((st) => (
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">Event Name</label>
+                    <input
+                        type="text"
+                        placeholder="Enter your event name"
+                        value={formData.eventName}
+                        onChange={(e) => setFormData({ ...formData, eventName: e.target.value })}
+                        className="w-full border-2 border-gray-200 rounded-xl p-4 text-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-4">Event Type</label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {eventTypes.map(({ name, icon: Icon }) => (
                             <button
-                                key={st}
-                                onClick={() => handleSubtypeSelect(st)}
-                                className={`px-4 py-2 border rounded-full cursor-pointer ${formData.subtype === st ? "bg-orange-100 border-orange-500" : ""
-                                    }`}
+                                key={name}
+                                onClick={() => handleTypeSelect(name)}
+                                className={`p-6 border-2 rounded-xl flex flex-col items-center gap-3 transition-all hover:shadow-md ${
+                                    formData.type === name 
+                                        ? "bg-blue-50 border-blue-500 text-blue-700 shadow-md" 
+                                        : "border-gray-200 hover:border-gray-300"
+                                }`}
                             >
-                                {st}
+                                <Icon className="w-8 h-8" />
+                                <span className="font-medium">{name}</span>
                             </button>
                         ))}
                     </div>
                 </div>
-            )}
 
-            <div className="flex justify-between">
-                <span></span>
+                {formData.type && (
+                    <div className="animate-fadeIn">
+                        <label className="block text-sm font-semibold text-gray-700 mb-4">Event Subtype</label>
+                        <div className="flex gap-3 flex-wrap">
+                            {subTypes[formData.type].map((st) => (
+                                <button
+                                    key={st}
+                                    onClick={() => handleSubtypeSelect(st)}
+                                    className={`px-6 py-3 border-2 rounded-full font-medium transition-all hover:shadow-sm ${
+                                        formData.subtype === st 
+                                            ? "bg-orange-50 border-orange-500 text-orange-700" 
+                                            : "border-gray-200 hover:border-gray-300"
+                                    }`}
+                                >
+                                    {st}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            <div className="flex justify-between pt-6 border-t border-gray-200">
+                <div></div>
                 <button
                     onClick={handleNextStep}
                     disabled={!isStepOneValid() || (formData.type === "Seating" && !slotAvailable)}
-                    className="bg-blue-600 text-white px-5 py-2 rounded-xl disabled:opacity-50 cursor-pointer"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
                 >
-                    Next
+                    Next Step
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
                 </button>
             </div>
         </div>
@@ -539,25 +577,27 @@ export const CreateEvent = () => {
             <div className="mb-4">
                 <label className="block mb-1 font-medium text-gray-700">Select Mode of the Event</label>
                 <div className="flex gap-6">
-                    <label className="flex items-center gap-2 cursor-pointer">
+                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-sm">
                         <input
                             type="radio"
                             name="eventMode"
                             value="Online"
                             checked={eventMode === "Online"}
                             onChange={() => setEventMode("Online")}
+                            className="w-4 h-4 text-blue-600 border-2 border-gray-300 focus:ring-2 focus:ring-blue-200 focus:outline-none"
                         />
-                        Online
+                        <span className="font-medium text-gray-700">Online</span>
                     </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
+                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-sm">
                         <input
                             type="radio"
                             name="eventMode"
                             value="Offline"
                             checked={eventMode === "Offline"}
                             onChange={() => setEventMode("Offline")}
+                            className="w-4 h-4 text-blue-600 border-2 border-gray-300 focus:ring-2 focus:ring-blue-200 focus:outline-none"
                         />
-                        Offline
+                        <span className="font-medium text-gray-700">Offline</span>
                     </label>
                 </div>
             </div>
@@ -569,7 +609,7 @@ export const CreateEvent = () => {
                     <div>
                         <label className="block mb-1 font-medium text-gray-700">Platform</label>
                         <select
-                            className="w-full border p-3 rounded-xl"
+                            className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                             value={formData.onlineDetails.platform || ""}
                             onChange={(e) => handleOnlineChange("platform", e.target.value)}
                         >
@@ -587,7 +627,7 @@ export const CreateEvent = () => {
                             <input
                                 type="text"
                                 placeholder="Enter meeting link"
-                                className="w-full border p-3 rounded-xl"
+                                className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                                 value={formData.onlineDetails.link || ""}
                                 onChange={(e) => handleOnlineChange("link", e.target.value)}
                             />
@@ -633,7 +673,7 @@ export const CreateEvent = () => {
                             <input
                                 type="text"
                                 placeholder="City"
-                                className="w-full border p-3 rounded-xl"
+                                className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                                 value={formData.city}
                                 onChange={(e) => {
                                     setFormData({ ...formData, city: e.target.value });
@@ -647,7 +687,7 @@ export const CreateEvent = () => {
                             <input
                                 type="text"
                                 placeholder="State"
-                                className="w-full border p-3 rounded-xl"
+                                className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                                 value={formData.state}
                                 onChange={(e) => {
                                     setFormData({ ...formData, state: e.target.value });
@@ -665,7 +705,7 @@ export const CreateEvent = () => {
                             </div>
                         ) : (
                             <select
-                                className="w-full border p-3 rounded-xl"
+                                className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white disabled:bg-gray-100 disabled:cursor-not-allowed"
                                 value={selectedHall}
                                 onChange={async (e) => {
                                     setSelectedHall(e.target.value);
@@ -685,7 +725,7 @@ export const CreateEvent = () => {
                         <div>
                             <label className="block mb-1 font-medium text-gray-700">Select Screen</label>
                             <select
-                                className="w-full border p-3 rounded-xl"
+                                className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                                 value={selectedScreen}
                                 onChange={(e) => {
                                     setSelectedScreen(e.target.value);
@@ -725,7 +765,7 @@ export const CreateEvent = () => {
                                 <input
                                     type="text"
                                     placeholder="Location"
-                                    className="w-full border p-3 rounded-xl"
+                                    className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                                     value={formData.location}
                                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                 />
@@ -736,7 +776,7 @@ export const CreateEvent = () => {
                                     <input
                                         type="text"
                                         placeholder="City"
-                                        className="w-full border p-3 rounded-xl"
+                                        className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                                         value={formData.city}
                                         onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                                     />
@@ -746,7 +786,7 @@ export const CreateEvent = () => {
                                     <input
                                         type="text"
                                         placeholder="State"
-                                        className="w-full border p-3 rounded-xl"
+                                        className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                                         value={formData.state}
                                         onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                                     />
@@ -756,7 +796,7 @@ export const CreateEvent = () => {
                                     <input
                                         type="text"
                                         placeholder="Area Name"
-                                        className="w-full border p-3 rounded-xl"
+                                        className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                                         value={formData.area_name}
                                         onChange={(e) => setFormData({ ...formData, area_name: e.target.value })}
                                     />
@@ -766,7 +806,7 @@ export const CreateEvent = () => {
                                     <input
                                         type="number"
                                         placeholder="832107"
-                                        className="w-full border p-3 rounded-xl"
+                                        className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                                         min="0"
                                         value={formData.pin}
                                         onChange={(e) => setFormData({ ...formData, pin: e.target.value })}
@@ -780,7 +820,7 @@ export const CreateEvent = () => {
                         <input
                             type="number"
                             placeholder="e.g. 150"
-                            className="w-full border p-3 rounded-xl"
+                            className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                             min="0"
                             value={formData.maxParticipantAllowed}
                             onChange={(e) => setFormData({ ...formData, maxParticipantAllowed: e.target.value })}
@@ -792,7 +832,7 @@ export const CreateEvent = () => {
                             <textarea
                                 rows={3}
                                 placeholder="Describe eligibility criteria for registration..."
-                                className="w-full border p-3 rounded-xl resize-none"
+                                className="w-full border-2 border-gray-200 p-3 rounded-xl resize-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                                 value={formData.eligibility_criteria || ""}
                                 onChange={e => setFormData({ ...formData, eligibility_criteria: e.target.value })}
                             />
@@ -944,7 +984,7 @@ export const CreateEvent = () => {
             <div className="mt-4">
                 <label className="block mb-1 font-medium text-gray-700">Genre</label>
                 <select
-                    className="w-full border p-3 rounded-xl"
+                    className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                     value={formData.genre}
                     onChange={e => setFormData({ ...formData, genre: e.target.value })}
                 >
@@ -989,7 +1029,7 @@ export const CreateEvent = () => {
                 <label className="block mb-1 font-medium text-gray-700">Event Start</label>
                 <input
                     type="datetime-local"
-                    className="w-full border p-3 rounded-xl"
+                    className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                     value={formData.start}
                     onChange={(e) => setFormData({ ...formData, start: e.target.value })}
                 />
@@ -999,7 +1039,7 @@ export const CreateEvent = () => {
                 <label className="block mb-1 font-medium text-gray-700">Event End</label>
                 <input
                     type="datetime-local"
-                    className="w-full border p-3 rounded-xl"
+                    className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                     value={formData.end}
                     onChange={(e) => setFormData({ ...formData, end: e.target.value })}
                 />
@@ -1007,38 +1047,41 @@ export const CreateEvent = () => {
 
             <div>
                 <label className="block mb-2 font-medium text-gray-700">Booking Cutoff Type</label>
-                <div className="flex gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer">
+                <div className="flex flex-wrap gap-4">
+                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-sm">
                         <input
                             type="radio"
                             name="cutoff"
                             value="before_start"
                             checked={formData.bookingCutOffType === "before_start"}
                             onChange={() => setFormData({ ...formData, bookingCutOffType: "before_start" })}
+                            className="w-4 h-4 text-blue-600 border-2 border-gray-300 focus:ring-2 focus:ring-blue-200 focus:outline-none"
                         />
-                        Before Start
+                        <span className="font-medium text-gray-700">Before Start</span>
                     </label>
 
-                    <label className="flex items-center gap-2 cursor-pointer">
+                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-sm">
                         <input
                             type="radio"
                             name="cutoff"
                             value="custom_time"
                             checked={formData.bookingCutOffType === "custom_time"}
                             onChange={() => setFormData({ ...formData, bookingCutOffType: "custom_time" })}
+                            className="w-4 h-4 text-blue-600 border-2 border-gray-300 focus:ring-2 focus:ring-blue-200 focus:outline-none"
                         />
-                        Custom Time
+                        <span className="font-medium text-gray-700">Custom Time</span>
                     </label>
 
-                    <label className="flex items-center gap-2 cursor-pointer">
+                    <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-sm">
                         <input
                             type="radio"
                             name="cutoff"
                             value="none"
                             checked={formData.bookingCutOffType === "none"}
                             onChange={() => setFormData({ ...formData, bookingCutOffType: "none" })}
+                            className="w-4 h-4 text-blue-600 border-2 border-gray-300 focus:ring-2 focus:ring-blue-200 focus:outline-none"
                         />
-                        None
+                        <span className="font-medium text-gray-700">None</span>
                     </label>
                 </div>
 
@@ -1048,7 +1091,7 @@ export const CreateEvent = () => {
                         <input
                             type="number"
                             placeholder="e.g. 30"
-                            className="w-full border p-3 rounded-xl"
+                            className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                             min="0"
                             value={formData.bookingCutoffMinutesBeforeStart}
                             onChange={(e) => setFormData({ ...formData, bookingCutoffMinutesBeforeStart: e.target.value })}
@@ -1061,7 +1104,7 @@ export const CreateEvent = () => {
                         <label className="block mb-1 text-gray-700">Select Custom Cutoff Time</label>
                         <input
                             type="datetime-local"
-                            className="w-full border p-3 rounded-xl"
+                            className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                             value={formData.bookingCutoffCustomTime}
                             onChange={(e) => setFormData({ ...formData, bookingCutoffCustomTime: e.target.value })}
                         />
@@ -1118,7 +1161,7 @@ export const CreateEvent = () => {
                 <textarea
                     rows={4}
                     placeholder="Describe your event in detail..."
-                    className="w-full border p-3 rounded-xl resize-none"
+                    className="w-full border-2 border-gray-200 p-3 rounded-xl resize-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 />
@@ -1129,37 +1172,114 @@ export const CreateEvent = () => {
                 <textarea
                     rows={3}
                     placeholder="Any specific instructions for attendees..."
-                    className="w-full border p-3 rounded-xl resize-none"
+                    className="w-full border-2 border-gray-200 p-3 rounded-xl resize-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                     value={formData.eventInstructions}
                     onChange={(e) => setFormData({ ...formData, eventInstructions: e.target.value })}
                 />
             </div>
 
-            <div className="mt-4">
-                <label className="block mb-1 font-medium text-gray-700">Minimum Eligibility Age</label>
-                <input
-                    type="number"
-                    min="0"
-                    className="w-full border p-3 rounded-xl"
-                    value={formData.eligibility_age}
-                    onChange={e => setFormData({ ...formData, eligibility_age: parseInt(e.target.value) || 0 })}
-                    placeholder="e.g. 18"
-                />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label className="block mb-1 font-medium text-gray-700">Language</label>
+                    <select
+                        className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
+                        value={formData.language}
+                        onChange={e => setFormData({ ...formData, language: e.target.value })}
+                    >
+                        <option value="" disabled>Select Language</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="English">English</option>
+                        <option value="Tamil">Tamil</option>
+                        <option value="Telugu">Telugu</option>
+                        <option value="Bengali">Bengali</option>
+                        <option value="Marathi">Marathi</option>
+                        <option value="Gujarati">Gujarati</option>
+                        <option value="Kannada">Kannada</option>
+                        <option value="Malayalam">Malayalam</option>
+                        <option value="Punjabi">Punjabi</option>
+                        <option value="Odia">Odia</option>
+                        <option value="Assamese">Assamese</option>
+                        <option value="Urdu">Urdu</option>
+                        <option value="Sanskrit">Sanskrit</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label className="block mb-1 font-medium text-gray-700">Rating Code</label>
+                    <select
+                        className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
+                        value={formData.ratingCode}
+                        onChange={e => setFormData({ ...formData, ratingCode: e.target.value })}
+                    >
+                        <option value="" disabled>Select Rating</option>
+                        <option value="U">U (Universal)</option>
+                        <option value="UA">UA (Parental Guidance)</option>
+                        <option value="A">A (Adults Only)</option>
+                        <option value="S">S (Restricted to Special Class)</option>
+                    </select>
+                </div>
             </div>
 
-            <div className="flex justify-between">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label className="block mb-1 font-medium text-gray-700">Minimum Eligibility Age</label>
+                    <input
+                        type="number"
+                        min="0"
+                        className="w-full border-2 border-gray-200 p-3 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
+                        value={formData.eligibility_age}
+                        onChange={e => setFormData({ ...formData, eligibility_age: e.target.value })}
+                        placeholder="e.g. 18"
+                    />
+                </div>
+                <div>
+                    <label className="block mb-2 font-medium text-gray-700">Are tickets cancellable?</label>
+                    <div className="flex gap-4">
+                        <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-sm">
+                            <input
+                                type="radio"
+                                name="ticketsCancellable"
+                                value="true"
+                                checked={formData.ticketsCancellable === true}
+                                onChange={() => setFormData({ ...formData, ticketsCancellable: true })}
+                                className="w-4 h-4 text-blue-600 border-2 border-gray-300 focus:ring-2 focus:ring-blue-200 focus:outline-none"
+                            />
+                            <span className="font-medium text-gray-700">Yes</span>
+                        </label>
+                        <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-sm">
+                            <input
+                                type="radio"
+                                name="ticketsCancellable"
+                                value="false"
+                                checked={formData.ticketsCancellable === false}
+                                onChange={() => setFormData({ ...formData, ticketsCancellable: false })}
+                                className="w-4 h-4 text-blue-600 border-2 border-gray-300 focus:ring-2 focus:ring-blue-200 focus:outline-none"
+                            />
+                            <span className="font-medium text-gray-700">No</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex justify-between pt-6 border-t border-gray-200">
                 <button
                     onClick={() => setStep(1)}
-                    className="bg-gray-300 text-black px-5 py-2 rounded-xl cursor-pointer"
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-8 py-3 rounded-xl font-semibold transition-colors flex items-center gap-2"
                 >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
                     Back
                 </button>
                 <button
                     onClick={() => setStep(3)}
                     disabled={!isStepTwoValid() || (formData.type === "Seating" && !slotAvailable)}
-                    className="bg-blue-600 text-white px-5 py-2 rounded-xl disabled:opacity-50 cursor-pointer"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
                 >
-                    Next
+                    Next Step
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
                 </button>
             </div>
         </div>
@@ -1188,7 +1308,7 @@ export const CreateEvent = () => {
                         <label className="block font-semibold">Select pricing option</label>
 
                         <div className="flex gap-4 mt-2">
-                            <label className="flex items-center gap-2">
+                            <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-sm">
                                 <input
                                     type="radio"
                                     name="priceOption"
@@ -1197,11 +1317,12 @@ export const CreateEvent = () => {
                                     onChange={(e) =>
                                         setFormData({ ...formData, pricingOption: e.target.value })
                                     }
+                                    className="w-4 h-4 text-blue-600 border-2 border-gray-300 focus:ring-2 focus:ring-blue-200 focus:outline-none"
                                 />
-                                Flat price
+                                <span className="font-medium text-gray-700">Flat price</span>
                             </label>
 
-                            <label className="flex items-center gap-2">
+                            <label className="flex items-center gap-3 cursor-pointer p-3 rounded-lg border-2 border-gray-200 hover:border-blue-300 transition-all duration-200 hover:shadow-sm">
                                 <input
                                     type="radio"
                                     name="priceOption"
@@ -1210,8 +1331,9 @@ export const CreateEvent = () => {
                                     onChange={(e) =>
                                         setFormData({ ...formData, pricingOption: e.target.value })
                                     }
+                                    className="w-4 h-4 text-blue-600 border-2 border-gray-300 focus:ring-2 focus:ring-blue-200 focus:outline-none"
                                 />
-                                Categorized price
+                                <span className="font-medium text-gray-700">Categorized price</span>
                             </label>
                         </div>
 
@@ -1422,11 +1544,14 @@ export const CreateEvent = () => {
                     </span>
                 </div>
 
-                <div className="flex justify-between mt-2">
+                <div className="flex justify-between pt-6 border-t border-gray-200">
                     <button
                         onClick={() => setStep(2)}
-                        className="bg-gray-300 text-black px-5 py-2 rounded-xl cursor-pointer"
+                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-8 py-3 rounded-xl font-semibold transition-colors flex items-center gap-2"
                     >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
                         Back
                     </button>
                     <button
@@ -1435,9 +1560,10 @@ export const CreateEvent = () => {
                             mutation.mutate();
                         }}
                         disabled={!isStepThreeValid() || loading}
-                        className="bg-green-600 text-white px-6 py-2 rounded-xl disabled:opacity-50 cursor-pointer"
+                        className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
                     >
-                        <Check className="inline-block mr-2" /> Accept and Proceed
+                        <Check className="w-5 h-5" />
+                        Create Event
                     </button>
                 </div>
             </div>
@@ -1479,21 +1605,49 @@ export const CreateEvent = () => {
 
 
     return (
-        <div className="max-w-xl mx-auto p-6 space-y-6">
-            <div className="text-center">
-                <h1 className="text-3xl font-bold">🎉 Create Your Event</h1>
-                <p className="text-gray-500 mt-1">Step {step} of 3</p>
-                <div className="w-full h-2 bg-gray-200 rounded-full mt-2">
-                    <div
-                        className="h-full bg-blue-600 rounded-full transition-all"
-                        style={{ width: `${(step / 3) * 100}%` }}
-                    ></div>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+            <div className="max-w-4xl mx-auto px-6">
+                {/* Header */}
+                <div className="text-center mb-8">
+                    {/* <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
+                        <span className="text-2xl text-white">🎉</span>
+                    </div> */}
+                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Create Your Event</h1>
+                    <p className="text-gray-600 text-lg">Step {step} of 3 - Let's bring your event to life</p>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="mb-8">
+                    <div className="flex items-center justify-between mb-2">
+                        {[1, 2, 3].map((stepNum) => (
+                            <div key={stepNum} className="flex items-center">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${
+                                    step >= stepNum ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'
+                                }`}>
+                                    {stepNum}
+                                </div>
+                                {stepNum < 3 && (
+                                    <div className={`w-24 h-1 mx-2 rounded-full ${
+                                        step > stepNum ? 'bg-blue-600' : 'bg-gray-200'
+                                    }`}></div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="flex justify-between text-sm text-gray-600">
+                        <span>Event Basics</span>
+                        <span>Event Details</span>
+                        <span>Payment Info</span>
+                    </div>
+                </div>
+
+                {/* Content Card */}
+                <div className="bg-white rounded-2xl shadow-xl p-8">
+                    {step === 1 && renderStepOne()}
+                    {step === 2 && renderStepTwo()}
+                    {step === 3 && renderStepThreeWithSpinner()}
                 </div>
             </div>
-
-            {step === 1 && renderStepOne()}
-            {step === 2 && renderStepTwo()}
-            {step === 3 && renderStepThreeWithSpinner()}
         </div>
     );
 };

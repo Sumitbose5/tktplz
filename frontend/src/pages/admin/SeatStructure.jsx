@@ -34,8 +34,10 @@ export default function SeatStructure() {
   const hallName = eventData.hall?.name || "";
   const screenNo = eventData.screen?.screen_no || "";
   const city = eventData.hall?.city || eventData.city || "";
+  const state = eventData.hall?.state || eventData.state || "";
   // Format date and time to a nice format
   const dateRaw = eventData.scheduleStart || "";
+  const poster = eventData.posterUrl || "";
   const date = dateRaw
     ? new Date(dateRaw).toLocaleString(undefined, {
         year: "numeric",
@@ -46,25 +48,60 @@ export default function SeatStructure() {
       })
     : "";
   const screenId = eventData.screen?.id || "";
+  const eventStart = eventData.scheduleStart || "";
+  const eventEnd = eventData.scheduleEnd || "";
 
   return (
-    <div className="min-h-screen bg-gray-50 relative">
-      <button 
-        onClick={() => navigate(-1)}
-        className="fixed top-4 left-4 z-50 px-3 py-2 bg-white hover:bg-gray-100 text-gray-700 rounded-lg shadow-lg border border-gray-200 transition-colors cursor-pointer relative"
-      > 
-        ← Back
-      </button>
-      <div className="pb-8 px-4 flex flex-col items-center">
-        <div className="w-full max-w-5xl">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">
-              {eventName ? `${eventName} - ` : ""}
-              {hallName ? `${hallName} - ` : ""}
-              Seat Structure{screenNo ? ` - Screen ${screenNo}` : ""}
-            </h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 font-montserrat text-gray-800 flex flex-col">
+      {/* Fixed Header */}
+      <div className="sticky top-0 z-40 bg-white shadow-md py-2 sm:py-3 md:py-4 px-3 sm:px-4 md:px-6 w-full border-b border-gray-200">
+        <div className="flex items-center justify-between">
+          {/* Left: Back button (mobile) / tktplz Logo (desktop) */}
+          <div className="flex-shrink-0">
+            {/* Mobile: Back button */}
+            <button
+              onClick={() => navigate(-1)}
+              className="sm:hidden flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            >
+              <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            
+            {/* Desktop: Logo */}
+            <img
+              src="../../../public/images/logo2.PNG"
+              alt="tktplz Logo"
+              className="hidden sm:block h-7 md:h-8 w-auto rounded-lg shadow-sm"
+            />
           </div>
-          <SeatSelection 
+
+          {/* Center: Event/Hall/Date Info */}
+          <div className="flex-grow text-center mx-2 md:mx-4">
+            <div className="w-full">
+              <h1 className="text-sm sm:text-base md:text-xl font-extrabold text-gray-900 leading-tight truncate">
+                {eventName}
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-600 truncate">
+                {date} at {hallName}, {city}
+              </p>
+            </div>
+          </div>
+
+          {/* Right: User Icon (hidden on mobile) */}
+          <div className="hidden sm:flex flex-shrink-0 w-7 h-7 md:w-8 md:h-8 bg-blue-500 rounded-full items-center justify-center text-white font-bold text-sm">
+            U
+          </div>
+          
+          {/* Mobile: Empty space for balance */}
+          <div className="sm:hidden w-8 h-8"></div>
+        </div>
+      </div>
+
+      {/* Scrollable Content Area */}
+      <div className="flex-grow overflow-y-auto px-2 sm:px-3 md:px-4 py-2 sm:py-3 md:py-4">
+        <div className="w-full max-w-4xl mx-auto bg-white rounded-lg sm:rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-6 lg:p-8 border border-gray-100">
+          <SeatSelection
             screenID={screenId}
             eventId={eventId}
             eventName={eventName}
@@ -72,9 +109,13 @@ export default function SeatStructure() {
             screenNo={screenNo}
             city={city}
             date={date}
+            poster={poster}
+            eventStart={eventStart}
+            eventEnd={eventEnd}
+            state={state}
           />
         </div>
       </div>
     </div>
   );
-} 
+}

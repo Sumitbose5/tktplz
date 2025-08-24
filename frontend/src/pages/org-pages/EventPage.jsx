@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Calendar, MapPin, Users, BadgeCheck, Info, Clock, Building2, Monitor } from "lucide-react";
+import { Calendar, MapPin, Users, BadgeCheck, Info, Clock, Building2, Monitor, Star, Globe, Heart, User } from "lucide-react";
 
 const EventDetails = () => {
   const { eventId } = useParams();
@@ -138,8 +138,90 @@ const EventDetails = () => {
                       <Info className="w-4 h-4" /> {event.sub_type}
                     </span>
                   )}
+                  {event.genre && (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-600/20 text-purple-200 text-sm font-medium rounded-full">
+                      <Star className="w-4 h-4" /> {event.genre}
+                    </span>
+                  )}
+                  {event.language && (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-600/20 text-green-200 text-sm font-medium rounded-full">
+                      <Globe className="w-4 h-4" /> {event.language}
+                    </span>
+                  )}
+                  {event.ratingCode && (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-yellow-600/20 text-yellow-200 text-sm font-medium rounded-full">
+                      <Star className="w-4 h-4" /> {event.ratingCode}
+                    </span>
+                  )}
+                  {event.isOnline && (
+                    <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-600/20 text-blue-200 text-sm font-medium rounded-full">
+                      <Globe className="w-4 h-4" /> Online
+                    </span>
+                  )}
                 </div>
-                <div className="space-y-2 text-indigo-100 text-base animate-fade-in-up delay-300">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 animate-fade-in-up delay-300">
+                  {/* Event Stats */}
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Heart className="w-5 h-5 text-red-300" />
+                      <span className="text-sm text-red-200 uppercase tracking-wide font-medium">Engagement</span>
+                    </div>
+                    <div className="space-y-2">
+                      {event.likes_count !== undefined && (
+                        <div className="flex justify-between">
+                          <span className="text-indigo-200">Likes:</span>
+                          <span className="text-white font-semibold">{event.likes_count}</span>
+                        </div>
+                      )}
+                      {event.totalBookings !== undefined && (
+                        <div className="flex justify-between">
+                          <span className="text-indigo-200">Bookings:</span>
+                          <span className="text-white font-semibold">{event.totalBookings}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Event Details */}
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Info className="w-5 h-5 text-blue-300" />
+                      <span className="text-sm text-blue-200 uppercase tracking-wide font-medium">Details</span>
+                    </div>
+                    <div className="space-y-2">
+                      {event.scheduleStart && event.scheduleEnd && (() => {
+                        const start = new Date(event.scheduleStart);
+                        const end = new Date(event.scheduleEnd);
+                        const diffMs = end - start;
+                        if (diffMs > 0) {
+                          const totalMinutes = Math.floor(diffMs / 60000);
+                          const hours = Math.floor(totalMinutes / 60);
+                          const minutes = totalMinutes % 60;
+                          return (
+                            <div className="flex justify-between">
+                              <span className="text-indigo-200">Duration:</span>
+                              <span className="text-white font-semibold">
+                                {hours > 0 ? `${hours}h ` : ""}
+                                {minutes > 0 ? `${minutes}m` : hours === 0 ? "0m" : ""}
+                              </span>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+                      {event.maxParticipantAllowed !== undefined && event.maxParticipantAllowed !== null && (
+                        <div className="flex justify-between">
+                          <span className="text-indigo-200">Capacity:</span>
+                          <span className="text-white font-semibold">
+                            {event.maxParticipantAllowed === 0 ? 'Unlimited' : event.maxParticipantAllowed}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 text-indigo-100 text-base animate-fade-in-up delay-300">
                   {/* Hall and Screen info for Seating events */}
                   {event.type === "Seating" && event.hallID && event.screenID && hallInfo && screenInfo && (
                     <div className="flex flex-col gap-1">
@@ -228,14 +310,34 @@ const EventDetails = () => {
                       <span className="font-semibold">Cutoff Time:</span> {event.bookingCutoffTimestamp}
                     </p>
                   )}
-                  {event.maxParticipantAllowed && (
+                  {event.maxParticipantAllowed !== undefined && event.maxParticipantAllowed !== null && (
                     <p className="flex items-center gap-2">
                       <Users className="w-4 h-4 text-fuchsia-300" />
-                      <span className="font-semibold">Max Participants:</span> {event.maxParticipantAllowed}
+                      <span className="font-semibold">Max Participants:</span> {event.maxParticipantAllowed === 0 ? 'Unlimited' : event.maxParticipantAllowed}
+                    </p>
+                  )}
+                  {event.eligibility_criteria && (
+                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
+                      <p className="flex items-center gap-2">
+                        <span className="font-semibold flex items-center gap-1">
+                          <Users className="w-4 h-4 text-blue-300 mr-1" />
+                          Eligibility:
+                        </span>
+                        <span className="text-blue-100">{event.eligibility_criteria}</span>
+                      </p>
+                    </div>
+                  )}
+                  {event.organiser && (
+                    <p className="flex items-center gap-2">
+                      <span className="font-semibold flex items-center gap-1">
+                        <User className="w-4 h-4 text-emerald-300 mr-1" />
+                        Organizer:
+                      </span>
+                      {event.organiser}
                     </p>
                   )}
                   {(event.createdAt || event.updatedAt) && (
-                    <div className="text-xs text-indigo-300 pt-2">
+                    <div className="text-xs text-indigo-300 pt-2 border-t border-white/10">
                       {event.createdAt && (
                         <p>Created: {new Date(event.createdAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
                       )}
@@ -252,70 +354,104 @@ const EventDetails = () => {
           {/* Description Section */}
           {event.description && (
             <div className="p-8 border-t border-white/10 animate-fade-in-up delay-400">
-              <h2 className="text-2xl font-semibold text-white mb-3 flex items-center gap-2 font-montserrat">
-                <Info className="w-5 h-5 text-indigo-200" /> About the Event
+              <h2 className="text-2xl font-semibold text-white mb-4 flex items-center gap-2 font-montserrat">
+                <Info className="w-6 h-6 text-indigo-200" /> About the Event
               </h2>
-              <div className="space-y-2">
-                {event.name && (
-                  <p>
-                    <span className="font-semibold text-indigo-200">Movie Name:</span>{" "}
-                    <span className="text-indigo-100">{event.name}</span>
-                  </p>
-                )}
-                {event.genre && (
-                  <p>
-                    <span className="font-semibold text-indigo-200">Genre:</span>{" "}
-                    <span className="text-indigo-100">{event.genre}</span>
-                  </p>
-                )}
-                {event.scheduleStart && event.scheduleEnd && (() => {
-                  const start = new Date(event.scheduleStart);
-                  const end = new Date(event.scheduleEnd);
-                  const diffMs = end - start;
-                  if (diffMs > 0) {
-                    const totalMinutes = Math.floor(diffMs / 60000);
-                    const hours = Math.floor(totalMinutes / 60);
-                    const minutes = totalMinutes % 60;
-                    return (
-                      <p>
-                        <span className="font-semibold text-indigo-200">Duration:</span>{" "}
-                        <span className="text-indigo-100">
-                          {hours > 0 ? `${hours}h ` : ""}
-                          {minutes > 0 ? `${minutes}m` : hours === 0 ? "0m" : ""}
-                        </span>
-                      </p>
-                    );
-                  }
-                  return null;
-                })()}
-                {event.description && (
-                  <p>
-                    <span className="font-semibold text-indigo-200">Description:</span>{" "}
-                    <span className="text-indigo-100">{event.description}</span>
-                  </p>
-                )}
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+                <p className="text-indigo-100 leading-relaxed text-base mb-4">
+                  {event.description}
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  {event.name && (
+                    <div className="flex justify-between py-2 border-b border-white/10">
+                      <span className="font-semibold text-indigo-200">Event Name:</span>
+                      <span className="text-indigo-100">{event.name}</span>
+                    </div>
+                  )}
+                  {event.genre && (
+                    <div className="flex justify-between py-2 border-b border-white/10">
+                      <span className="font-semibold text-indigo-200">Genre:</span>
+                      <span className="text-indigo-100">{event.genre}</span>
+                    </div>
+                  )}
+                  {event.language && (
+                    <div className="flex justify-between py-2 border-b border-white/10">
+                      <span className="font-semibold text-indigo-200">Language:</span>
+                      <span className="text-indigo-100">{event.language}</span>
+                    </div>
+                  )}
+                  {event.ratingCode && (
+                    <div className="flex justify-between py-2 border-b border-white/10">
+                      <span className="font-semibold text-indigo-200">Rating:</span>
+                      <span className="text-indigo-100">{event.ratingCode}</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
 
           {/* Instructions Section */}
-          {event.eventInstructions && (
+          {(event.eventInstructions || event.eligibility_criteria) && (
             <div className="p-8 border-t border-white/10 animate-fade-in-up delay-500">
-              <h2 className="text-2xl font-semibold text-white font-montserrat mb-3 flex items-center gap-2">
-                <Info className="w-5 h-5 text-indigo-200" /> Instructions
+              <h2 className="text-2xl font-semibold text-white font-montserrat mb-4 flex items-center gap-2">
+                <Info className="w-6 h-6 text-indigo-200" /> Instructions & Guidelines
               </h2>
-              <p className="text-indigo-100 leading-relaxed text-base">
-                {event.eventInstructions
-                  ? event.eventInstructions
-                      .split(/(?=\d+\.\s)/g)
-                      .map((point, idx) => (
-                        <span key={idx}>
-                          {point.trim()}
-                          <br />
-                        </span>
-                      ))
-                  : null}
-              </p>
+              
+              {event.eligibility_criteria && (
+                <div className="mb-6 p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
+                  <h3 className="font-semibold text-blue-200 mb-2 flex items-center gap-2">
+                    <Users className="w-4 h-4" /> Eligibility Criteria
+                  </h3>
+                  <p className="text-blue-100 leading-relaxed text-base">{event.eligibility_criteria}</p>
+                </div>
+              )}
+              
+              {event.eventInstructions && (
+                <div className="p-4 bg-white/5 rounded-xl border border-white/10">
+                  <h3 className="font-semibold text-indigo-200 mb-3 flex items-center gap-2">
+                    <Info className="w-4 h-4" /> Event Guidelines
+                  </h3>
+                  <div className="text-indigo-100 leading-relaxed text-base">
+                    {Array.isArray(event.eventInstructions) ? (
+                      <ul className="list-disc pl-5 space-y-2">
+                        {event.eventInstructions.filter(ins => ins && ins.trim()).map((ins, idx) => (
+                          <li key={idx}>{ins}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="whitespace-pre-line">
+                        {event.eventInstructions
+                          .split(/(?=\d+\.\s)/g)
+                          .map((point, idx) => (
+                            <div key={idx} className="mb-2">
+                              {point.trim()}
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          {/* Organizer Section */}
+          {event.organiser && (
+            <div className="p-8 border-t border-white/10 animate-fade-in-up delay-600">
+              <h2 className="text-2xl font-semibold text-white font-montserrat mb-4 flex items-center gap-2">
+                <User className="w-6 h-6 text-indigo-200" /> Organized by
+              </h2>
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center">
+                    <User className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-white">{event.organiser}</h3>
+                    <p className="text-indigo-200 text-sm">Event Organizer</p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>

@@ -11,7 +11,7 @@ export const OTP = () => {
     const [otp, setOtp] = useState(new Array(6).fill(""));
     const inputRefs = useRef([]);
     const navigate = useNavigate();
-    const { hideModal, showLoginModal } = useModal();
+    const { hideModal, showLoginModal, redirectUrl } = useModal();
     const modalRef = useRef();
     const { emailData, setUser } = useAuth();
 
@@ -44,7 +44,8 @@ export const OTP = () => {
                 if (data.role === "user") {
                     hideModal();
                     setUser(data);
-                    navigate("/");
+                    // Redirect to stored URL or default to home
+                    navigate(redirectUrl || "/");
                 }
                 else if (data.role === "organiser") {
                     navigate("/orgn/dashboard");
