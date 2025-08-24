@@ -1,6 +1,7 @@
 import { db } from "../config/db.js";
 import { events } from "../drizzle/eventSchema.js";
 import { ticketCategories, ticketPrices } from "../drizzle/ticketPrices.js";
+import { eventCleanupQueue } from "../queues/eventCleanupQueue.js";
 import { v4 as uuidv4 } from 'uuid';
 
 export const onlineEvent = async (req, res) => {
@@ -9,7 +10,7 @@ export const onlineEvent = async (req, res) => {
             eventName, organiserID, type, subtype, description, isPaid,
             start, end, maxParticipantAllowed, platformForOnlineEvent, requiresRegistration, eventInstructions,
             onlineDetails, bookingCutoffType, bookingCutoffMinutesBeforeStart, bookingCutoffCustomTime, pricingOption, categorizedPrices, flatPrice,
-            eligibility_age, genre
+            eligibility_age, genre, language, ratingCode, ticketsCancellable
         } = req.body; 
 
 
@@ -77,6 +78,9 @@ export const onlineEvent = async (req, res) => {
                 bookingCloseTime,
                 eligibility_age: typeof eligibility_age === 'number' ? eligibility_age : 0,
                 genre,
+                language,
+                ratingCode,
+                isTicketsCancelleable: ticketsCancellable,
             })
 
         // Insert into ticket categories
@@ -96,6 +100,13 @@ export const onlineEvent = async (req, res) => {
                 numberOfTickets: maxParticipantAllowed,
             });
         }
+
+        // Schedule cleanup job for event end
+        await eventCleanupQueue.add(
+            'cleanup-event',
+            { eventId: eventID, eventType: type },
+            { delay: scheduleEnd.getTime() - Date.now(), jobId: `cleanup-${eventID}` }
+        );
 
         return res.status(200).json({
             success: true,

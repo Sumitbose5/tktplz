@@ -5,6 +5,7 @@ import { seats } from "../drizzle/seatSchema.js";
 import { screenTable } from "../drizzle/screenSchema.js";
 import { organiser } from "../drizzle/organiserSchema.js";
 import { admins } from "../drizzle/adminSchema.js";
+import { tickets } from "../drizzle/ticketSchema.js";
 import { v4 as uuidv4 } from 'uuid';
 import { ticketPrices } from "../drizzle/ticketPrices.js";
 import { ticketCategories } from "../drizzle/ticketPrices.js";
@@ -372,6 +373,22 @@ export const getSeatsAndPriceByScreenID = async (req, res) => {
         const { screenID, eventId } = req.params;
         // Fetch seats for the screen
         const seatList = await db.select().from(seats).where(eq(seats.screenId, screenID));
+        
+        // Get event-specific booked seats
+        const confirmedTickets = await db.select({ seatNumbers: tickets.seatNumbers })
+            .from(tickets)
+            .where(and(eq(tickets.eventId, eventId), eq(tickets.status, 'CONFIRMED')));
+        
+        const bookedSeatIds = confirmedTickets
+            .filter(ticket => ticket.seatNumbers)
+            .flatMap(ticket => ticket.seatNumbers);
+        
+        // Mark seats as booked based on event-specific bookings
+        const seatsWithBookingStatus = seatList.map(seat => ({
+            ...seat,
+            isBooked: bookedSeatIds.includes(seat.id)
+        }));
+        
         // Fetch price details for the event
         let priceDetails = null;
         const ticketPriceData = await db.select().from(ticketPrices).where(eq(ticketPrices.eventId, eventId)); 
@@ -383,7 +400,7 @@ export const getSeatsAndPriceByScreenID = async (req, res) => {
                 priceDetails = ticketCategoryData;
             }
         }
-        return res.status(200).json({ success: true, seats: seatList, price: priceDetails });
+        return res.status(200).json({ success: true, seats: seatsWithBookingStatus, price: priceDetails });
     } catch (err) {
         return res.status(500).json({ success: false, message: err.message });
     }

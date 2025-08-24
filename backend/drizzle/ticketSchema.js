@@ -11,15 +11,23 @@ export const tickets = mysqlTable('tickets', {
   userId: varchar('user_id', {length: 36}).notNull().references(() => users.id),
   eventId: varchar('event_id', {length: 36}).notNull().references(() => events.id),
   bookingID: varchar('booking_id', { length: 36 }).notNull().unique(), // change this by using unique uuid
+  paymentId: varchar('payment_id', { length: 36 }),
+  orderId: varchar('order_id', { length: 36 }),
+
+  posterUrl: varchar('poster_url', { length: 500 }),
+  eventDetails: json('event_details'),
 
   eventType: varchar('event_type', { length: 50 }), // "movie", "concert", "hackathon", etc.
   numberOfTickets: int('number_of_tickets').default(1),
   qr: varchar('qr', { length: 250 }).notNull(),
 
   totalAmount: decimal('total_amount', { precision: 10, scale: 2 }).notNull(),
+  baseAmount: decimal('base_amount', { precision: 10, scale: 2 }),
+  totalConvenienceFee: decimal('total_convenience_fee', { precision: 10, scale: 2 }),
 
   status: varchar('status', { length: 50 }).default('PENDING'), // 'CONFIRMED' | 'CANCELLED' | 'PENDING'
   paymentMethod: varchar('payment_method', { length: 50 }), // 'CARD' | 'UPI' | 'WALLET'
+  qr_status: varchar('qr_status', {length: 50}).default('unused'), // used, unused
 
   // Movie
   hall_name: varchar('hall_name', { length: 50 }),

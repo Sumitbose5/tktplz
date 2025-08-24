@@ -19,6 +19,9 @@ export const events = mysqlTable('events_table', {
   genre: varchar('genre', { length: 100 }), // e.g., action, drama, comedy, etc.
   description: text('description'),
 
+  language: varchar('language', { length: 100 }).default('Hindi'),
+  ratingCode: varchar('rating_code', { length: 20 }).default('U'),  // U=Universal, A=Adults, UA=Parental Guidance
+
   scheduleStart: datetime('schedule_start').notNull(),
   scheduleEnd: datetime('schedule_end').notNull(),
 
@@ -37,7 +40,7 @@ export const events = mysqlTable('events_table', {
 
   hallID: varchar('hall_id', { length: 36 })
     .default(null)
-    .references(() => halls.id, { onDelete: 'cascade' }),
+    .references(() => halls.id, { onDelete: 'cascade' }), 
 
   screenID: varchar('screen_id', { length: 36 })
     .default(null)
@@ -50,13 +53,18 @@ export const events = mysqlTable('events_table', {
   verificationStatus: varchar('verification_status', { length: 255 }).default('pending').notNull(), // pending, approved, rejected
 
   isPublished: boolean('is_published').default(false).notNull(),
-  isPaid: boolean('isPaid').default(true),
+  isPaid: boolean('isPaid').default(true), 
+  isCompleted: boolean('is_completed').default(false), 
 
   ticketsAvailable: int('tickets_available').default(0),
   maxParticipantAllowed: int('maxParticipantAllowed').default(0),
+  likes_count: int('likes_count').default(0),
+  isRefundable: boolean('is_refundable').default(false),
+  isTicketsCancelleable: boolean('is_ticket_cancelleable').default(false),
 
   eventInstructions: text('event_instructions'),
   requiresRegistration: boolean('requires_registration').default(false),
+  isPaymentMade: boolean('is_payment_made').default(false),
 
   rating: double('rating').default(0), // 0-5 scale
   totalReviews: int('total_reviews').default(0), // total number of reviews

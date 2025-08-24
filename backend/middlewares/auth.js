@@ -87,3 +87,22 @@ export const isAdmin = (req, res, next) => {
         })
     }
 }
+
+
+export const isOrganiserORAdmin = (req, res, next) => {
+    try{
+        if(req.user.role !== "organiser" && req.user.role !== "admin"){
+            console.log("Error in isOrganiserORAdmin!")
+            return res.status(401).json({ 
+                success : false,
+                message : "Permission prohibited, only organisers and admins are allowed!"
+            })
+        }
+        next();
+    }catch(err){
+        return res.status(500).json({
+            success : false,
+            message : "Something went wrong while checking is Organiser or Admin."
+        })
+    }
+}

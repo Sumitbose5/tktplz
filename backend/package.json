@@ -16,9 +16,11 @@
   "description": "",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "bullmq": "^5.56.9",
     "cloudinary": "^2.6.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.43.1",
     "express": "^5.1.0",
@@ -35,7 +37,11 @@
     "passport-google-oauth20": "^2.0.0",
     "passport-google-oidc": "^0.1.0",
     "passport-jwt": "^4.0.1",
+    "pdfkit": "^0.17.1",
+    "puppeteer": "^24.16.1",
     "qrcode": "^1.5.4",
+    "razorpay": "^2.9.6",
+    "socket.io": "^4.8.1",
     "speakeasy": "^2.0.0",
     "streamifier": "^0.1.1",
     "uuid": "^11.1.0"

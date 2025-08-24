@@ -3,6 +3,7 @@ import { db } from "../config/db.js";
 import { participants } from "../drizzle/participantInfo.js";
 import { events } from "../drizzle/eventSchema.js";
 import { ticketCategories, ticketPrices } from "../drizzle/ticketPrices.js";
+import { eventCleanupQueue } from "../queues/eventCleanupQueue.js";
 import { v4 as uuidv4 } from 'uuid';
 import Form from "../models/FormSchema.js";
 
@@ -13,7 +14,7 @@ export const registrationEvent = async (req, res) => {
             eventName, organiserID, type, subtype, description, location, city, state, area_name, eventInstructions,
             start, end, maxParticipantAllowed, platformForOnlineEvent, requiresRegistration, isPaid,
             eventLink, bookingCutoffType, bookingCutoffMinutesBeforeStart, bookingCutoffTimestamp, pricingOption, categorizedPrices, flatPrice,
-            eligibility_age, genre,
+            eligibility_age, genre, language, ratingCode, ticketsCancellable,
             pin, isOnline, eligibility_criteria, registrationFields, isCompetition, participationType, minTeamMembers, maxTeamMembers
         } = req.body;
 
@@ -59,6 +60,9 @@ export const registrationEvent = async (req, res) => {
                 bookingCloseTime,
                 eligibility_age: typeof eligibility_age === 'number' ? eligibility_age : 0,
                 genre,
+                language,
+                ratingCode,
+                isTicketsCancelleable: ticketsCancellable,
                 pin, isOnline, eligibility_criteria, isCompetition, participationType, minTeamMembers, maxTeamMembers
             })
 
@@ -104,6 +108,13 @@ export const registrationEvent = async (req, res) => {
         await db.update(events)
             .set({ formSchemaID: savedForm._id.toString() })
             .where(eq(events.id, eventID));
+
+        // Schedule cleanup job for event end
+        await eventCleanupQueue.add(
+            'cleanup-event',
+            { eventId: eventID, eventType: type },
+            { delay: scheduleEnd.getTime() - Date.now(), jobId: `cleanup-${eventID}` }
+        );
 
         return res.status(201).json({
             success: true,

@@ -11,3 +11,7 @@ export * from "./ticket_student.js";
 export * from "./bookingsSchema.js";
 export * from "./adminSchema.js";
 export * from "./inviteLinkSchema.js"
+export * from "./likesSchema.js"
+export * from "./refundSchema.js"
+export * from "./issueSchema.js"
+export * from "./payoutSchema.js"

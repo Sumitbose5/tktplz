@@ -18,7 +18,7 @@ router.post("/create/zones", zonesController);
 
 // registration event
 import { registrationEvent, registerAllAtOnce } from '../eventStrategies/registrationEvent.js';
-import { uploadPoster, updateEventPosterUrl, getOrganiserEvents, updateEventDetails, getEventTicketDetails, updateEventTicketDetails, deleteEvent, getAllEvents, getPriceDetails, getRegistrationFields } from '../controller/eventController.js';
+import { uploadPoster, updateEventPosterUrl, getOrganiserEvents, updateEventDetails, getEventTicketDetails, updateEventTicketDetails, deleteEvent, getAllEvents, getPriceDetails, getRegistrationFields, getBookedSeats, getEventsWithType } from '../controller/eventController.js';
 router.post("/create/Registration", registrationEvent);
 router.post("/register-for-event", registerAllAtOnce);
 
@@ -56,5 +56,9 @@ router.post("/check-seating-slot", checkSeatingSlot);
 router.post("/get-reg-fields", getRegistrationFields);
 
 router.get('/get-price-details/:eventId', getPriceDetails);
+
+router.get('/get-booked-seats/:eventId', getBookedSeats);
+
+router.get("/get-events-type/:subtype", getEventsWithType);
 
 export default router;

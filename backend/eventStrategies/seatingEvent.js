@@ -4,6 +4,7 @@ import { events } from "../drizzle/eventSchema.js"
 import { halls } from "../drizzle/hallSchema.js";
 import { screenTable } from "../drizzle/screenSchema.js";
 import { ticketCategories, ticketPrices } from "../drizzle/ticketPrices.js";
+import { eventCleanupQueue } from "../queues/eventCleanupQueue.js";
 import { v4 as uuidv4 } from 'uuid';
 import { sql } from "drizzle-orm";
 
@@ -12,7 +13,7 @@ export const seatingEvent = async(req, res) => {
         const { 
             eventName, organiserID, type, subtype, description, isPaid, eventInstructions, hallID, screenID,
             start, end, location, bookingCutoffType, bookingCutoffMinutesBeforeStart, bookingCutoffTimestamp, pricingOption, categorizedPrices, flatPrice,
-            eligibility_age, genre
+            eligibility_age, genre, language, ratingCode, ticketsCancellable
         } = req.body;
 
         // Validate hall
@@ -25,6 +26,8 @@ export const seatingEvent = async(req, res) => {
         // Validate screen
         const checkScreenID = await db.select().from(screenTable)
             .where(and(eq(screenTable.id, screenID), eq(screenTable.hallId, hallID)));
+
+        const totalSeats = checkScreenID[0].totalSeats;
 
         if (checkScreenID.length === 0) {
             console.log("Screen provided does not exist");
@@ -112,12 +115,16 @@ export const seatingEvent = async(req, res) => {
             isPaid,
             eventInstructions,
             ticketsAvailable: totalSeatsInScreen,
+            maxParticipantAllowed: totalSeats,
             bookingCutoffType,
             bookingCutoffMinutesBeforeStart,
             bookingCutoffTimestamp: parsedBookingCutoffTimestamp,
             bookingCloseTime,
             eligibility_age: typeof eligibility_age === 'number' ? eligibility_age : 0,
             genre,
+            language,
+            ratingCode,
+            isTicketsCancelleable: ticketsCancellable,
         });
 
         // update the hall's screen booked from and booked till parameter (for reference, not for booking logic)
@@ -145,6 +152,14 @@ export const seatingEvent = async(req, res) => {
                 numberOfTickets: totalSeatsInScreen, // Use maxParticipantAllowed or totalSeatsInScreen if not provided
             });
         }
+
+        // Schedule cleanup job for event end
+        console.log("When to clean, clean timing : ", scheduleEnd.getTime() - Date.now());
+        await eventCleanupQueue.add(
+            'cleanup-event',
+            { eventId: eventID, eventType: type },
+            { delay: scheduleEnd.getTime() - Date.now(), jobId: `cleanup-${eventID}` }
+        );
 
         return res.status(201).json({
             success: true,

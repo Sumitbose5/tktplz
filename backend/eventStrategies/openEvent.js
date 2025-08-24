@@ -2,6 +2,7 @@ import { db } from "../config/db.js";
 import { events } from "../drizzle/eventSchema.js";
 import { zones } from "../drizzle/zoneSchema.js";
 import { ticketCategories, ticketPrices } from "../drizzle/ticketPrices.js";
+import { eventCleanupQueue } from "../queues/eventCleanupQueue.js";
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -12,7 +13,7 @@ export const openEvent = async (req, res) => {
             eventName, organiserID, type, subtype, description, location, city, state, area_name,
             start, end, maxParticipantAllowed, platformForOnlineEvent, requiresRegistration, isPaid,
             eventLink, bookingCutoffType, bookingCutoffMinutesBeforeStart, bookingCutoffTimestamp, pricingOption, categorizedPrices, flatPrice,
-            eligibility_age, genre, eventInstructions
+            eligibility_age, genre, eventInstructions, language, ratingCode, ticketsCancellable
         } = req.body;
 
         // Validate start and end times
@@ -78,6 +79,9 @@ export const openEvent = async (req, res) => {
                 bookingCloseTime,
                 eligibility_age: typeof eligibility_age === 'number' ? eligibility_age : 0,
                 genre,
+                language,
+                ratingCode,
+                isTicketsCancelleable: ticketsCancellable,
             })
 
         // Insert into ticket categories
@@ -98,6 +102,13 @@ export const openEvent = async (req, res) => {
                 numberOfTickets: maxParticipantAllowed,
             });
         }
+
+        // Schedule cleanup job for event end
+        await eventCleanupQueue.add(
+            'cleanup-event',
+            { eventId: eventID, eventType: type },
+            { delay: scheduleEnd.getTime() - Date.now(), jobId: `cleanup-${eventID}` }
+        );
 
         return res.status(201).json({
             success: true,

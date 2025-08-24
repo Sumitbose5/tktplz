@@ -1,9 +1,13 @@
 import express from "express";
 const router = express.Router();
 
-import { getBookingSummary} from "../controller/bookingController.js";
-import { getPrices } from "../middlewares/booking.js";
+import { getBookingSummary, getLockedSeats, unlockItems} from "../controller/bookingController.js";
+import { getPrices, lockItems } from "../middlewares/booking.js";
 
-router.post("/get-booking-summary", getPrices, getBookingSummary);
+router.post("/get-booking-summary", getPrices, lockItems, getBookingSummary);
+
+router.post("/unlock-items", unlockItems);
+
+router.get("/get-locked-seats/:eventId", getLockedSeats);
 
 export default router;

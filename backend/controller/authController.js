@@ -533,6 +533,17 @@ export const getQR = async (req, res) => {
     const { email } = req.params;
     const secret = await redis.get(email);
     if (!secret) return res.status(400).json({ message: "Invalid or expired invite." });
+    
+    // Check if invite exists and if it has been used
+    const inviteEmail = await db.select().from(inviteLinks).where(eq(inviteLinks.email, email));
+    if(!inviteEmail || inviteEmail.length === 0) {
+        return res.status(400).json({ message: "Invalid or expired invite." });
+    }
+
+    // If the invite has been used or marked as visited, return expired message
+    if(inviteEmail[0].used) {
+        return res.status(400).json({ message: "Link has expired." });
+    }
 
     const qrUrl = `otpauth://totp/TktPlz (${email})?secret=${secret}&issuer=TktPlz`;
     res.json({ qrUrl });
@@ -541,31 +552,45 @@ export const getQR = async (req, res) => {
 
 export const markVisited = async (req, res) => {
     const { email, token } = req.body;
-
+    
     try {
-        // check is email and token exists in the DB
+        // Hash the token before comparing with the database
+        const hashedToken = hashToken(token);
+        
+        // Check if email and token exist in the DB
         const exist = await db.select()
             .from(inviteLinks)
             .where(
                 and(
-                    eq(email, inviteLinks.email), 
-                    eq(token, inviteLinks.token)
+                    eq(inviteLinks.email, email), 
+                    eq(inviteLinks.token, hashedToken)
             ));
 
-        if(!exist) {
+        if(!exist || exist.length === 0) {
             return res.status(401).json({
                 success: false,
-                message: "Unauthorized, details doesn't exist"
-            })
+                message: "Unauthorized, details don't exist"
+            });
         }
 
-        // Update the invite entry only if not already visited
+        // Check if the invite has already been used
+        if(exist[0].used) {
+            return res.status(400).json({
+                success: false,
+                message: "Link has already been used"
+            });
+        }
+
+        // Update the invite entry to mark it as used
         await db.update(inviteLinks).set({ used: true }).where(and(
             eq(inviteLinks.email, email),
-            eq(inviteLinks.used, false)
+            eq(inviteLinks.token, hashedToken)
         ));
 
-        return res.status(200).json({ message: "Invite marked as visited" });
+        return res.status(200).json({ 
+            success: true,
+            message: "Invite marked as visited" 
+        });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ message: "Error marking invite as visited" });

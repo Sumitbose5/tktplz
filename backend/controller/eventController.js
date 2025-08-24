@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 import { halls } from "../drizzle/hallSchema.js";
 import { screenTable } from "../drizzle/screenSchema.js";
 import { events } from "../drizzle/eventSchema.js";
+import { likes } from "../drizzle/likesSchema.js";
 import streamifier from "streamifier";
 import { ticketPrices, ticketCategories } from '../drizzle/ticketPrices.js';
 const { organiser } = await import('../drizzle/organiserSchema.js');
@@ -171,6 +172,7 @@ export const updateEventPosterUrl = async (req, res) => {
 export const getEventDetails = async (req, res) => {
     try {
         const { eventId } = req.params;
+        const { userId } = req.query;
 
         if (!eventId) {
             return res.status(400).json({ success: false, message: "Event ID is required" });
@@ -185,6 +187,8 @@ export const getEventDetails = async (req, res) => {
         const event = eventDetails[0];
         let hall = null;
         let screen = null;
+        let isLiked = false;
+
         if (event.type === 'Seating' && event.hallID && event.screenID) {
             // Fetch hall info
             const hallData = await db.select().from(halls).where(eq(halls.id, event.hallID));
@@ -198,10 +202,16 @@ export const getEventDetails = async (req, res) => {
             }
         }
 
+        // Check if user has liked this event (only if userId is provided)
+        if (userId) {
+            const likeData = await db.select().from(likes).where(and(eq(likes.userId, userId), eq(likes.eventId, eventId)));
+            isLiked = likeData.length > 0;
+        }
+
         return res.status(200).json({
             success: true,
             message: "Event details fetched successfully",
-            data: { ...event, hall, screen }
+            data: { ...event, hall, screen, isLiked }
         });
 
     } catch (error) {
@@ -224,10 +234,26 @@ export const getOrganiserEvents = async (req, res) => {
         // Fetch events for the specified organiser
         const organiserEvents = await db.select().from(events).where(eq(events.organiserID, organiserId));
 
-        if (organiserEvents.length === 0) {
+        // Enrich seating events with hall city, state, areaName
+        const enrichedEvents = await Promise.all(organiserEvents.map(async (event) => {
+            if (event.type === 'Seating' && event.hallID) {
+                const hallData = await db.select().from(halls).where(eq(halls.id, event.hallID));
+                if (hallData && hallData[0]) {
+                    return {
+                        ...event,
+                        city: hallData[0].city || null,
+                        state: hallData[0].state || null,
+                        areaName: hallData[0].areaName || null
+                    };
+                }
+            }
+            return event;
+        }));
+
+        if (enrichedEvents.length === 0) {
             return res.status(201).json({
                 success: false,
-                organiserEvents,
+                organiserEvents: enrichedEvents,
                 message: "No events found for this organiser"
             });
         }
@@ -235,7 +261,7 @@ export const getOrganiserEvents = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Organiser events fetched successfully",
-            organiserEvents
+            organiserEvents: enrichedEvents
         });
     } catch (error) {
         return res.status(500).json({
@@ -390,7 +416,8 @@ export const getAllEvents = async (req, res) => {
             })
             .from(events)
             .leftJoin(organiser, eq(events.organiserID, organiser.id))
-            .where(eq(events.verificationStatus, "approved"));
+            .where(and(eq(events.verificationStatus, "approved"), eq(events.isCompleted, "false")));
+
 
         // For seating events, fetch city and state from hall
         const enrichedEvents = await Promise.all(eventsWithOrganiser.map(async (event) => {
@@ -513,4 +540,77 @@ export const getRegistrationFields = async (req, res) => {
 }
 
 
+export const getBookedSeats = async (req, res) => {
+    const { eventId } = req.params;
 
+    try {
+        if(!eventId) return res.status(400).json({ success: false, message: "eventId is required" });
+
+        const confirmedTickets = await db.select({ seatNumbers: tickets.seatNumbers })
+            .from(tickets)
+            .where(and(eq(tickets.eventId, eventId), eq(tickets.status, 'CONFIRMED')));
+
+        const bookedSeatIds = confirmedTickets
+            .filter(ticket => ticket.seatNumbers)
+            .flatMap(ticket => ticket.seatNumbers);
+
+        return res.status(200).json({
+            success: true,
+            message: "Booked seats fetched successfully",
+            bookedSeatIds
+        });
+
+    } catch(err) {
+        console.log("Error in getBookedSeats : ", err);
+        return res.status(500).json({ success: false, message: err.message });
+    }
+}
+
+
+export const getEventsWithType = async (req, res) => {
+    try {
+        const { subtype } = req.params;
+        if (!subtype) {
+            return res.status(400).json({ success: false, message: "Event type is required" });
+        }
+
+        const eventsWithOrganiser = await db
+            .select({
+                ...events,
+                organiserName: organiser.name
+            })
+            .from(events)
+            .leftJoin(organiser, eq(events.organiserID, organiser.id))
+            .where(and(eq(events.verificationStatus, "approved"), eq(events.isCompleted, "false"), eq(events.sub_type, subtype)));
+
+
+        // For seating events, fetch city and state from hall
+        const enrichedEvents = await Promise.all(eventsWithOrganiser.map(async (event) => {
+            if (event.type === 'Seating' && event.hallID) {
+                // Fetch hall details
+                const hallData = await db.select().from(halls).where(eq(halls.id, event.hallID));
+                if (hallData && hallData[0]) {
+                    return {
+                        ...event, 
+                        city: hallData[0].city || null,
+                        state: hallData[0].state || null
+                    };
+                }
+            }
+            // For non-seating or missing hallID, just return as is
+            return event;
+        }));
+
+        res.status(200).json({
+            success: true,
+            message: "All approved events fetched successfully",
+            data: enrichedEvents
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: "Error fetching events",
+            error: err.message
+        });
+    }
+};

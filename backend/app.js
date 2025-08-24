@@ -6,7 +6,19 @@ import passport from './config/passport.js';
 import dotenv from 'dotenv';
 import multer from "multer";
 import { dbConnect } from './config/mongoDB.js';
+import http from 'http';
+import { Server } from 'socket.io'; // Import Server from socket.io
+import { socketHandler } from './utils/socketHandler.js';
+import './workers/index.js'; // Initialize workers
 dotenv.config();
+
+const server = http.createServer(app);
+const io = new Server(server, { // Initialize Socket.IO with the http server
+    cors: {
+        origin: "http://localhost:5173", // Make sure this matches your client-side origin
+        credentials: true
+    }
+});
 
 dbConnect();
 
@@ -43,8 +55,33 @@ app.use("/api/admin", adminRoutes);
 import bookingRoutes from './routes/bookingRoutes.js';
 app.use("/api/booking", bookingRoutes);
 
+import paymentRoutes from './routes/paymentRoutes.js';
+app.use("/api/payment", paymentRoutes);
+
+import ticketRoutes from './routes/ticketRoutes.js';
+app.use("/api/ticket", ticketRoutes);
+
+import userRoutes from './routes/userRoutes.js';
+app.use("/api/user", userRoutes);
+
+
+// Use Socket.IO handler
+io.on('connection', (socket) => {
+    // console.log('A user connected:', socket.id);
+    socketHandler(io, socket); // Pass io and socket to the handler
+});
+
+// ⬇️ Attach io to app so it's accessible everywhere
+app.set('io', io);
+
+export const getIO = () => {
+    if (!io) throw new Error("Socket.io not initialized");
+    return io;
+};
+
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => { // Use server.listen instead of app.listen
     console.log(`Server running on port ${PORT} 🚀`);
+    console.log(`Socket.IO listening on port ${PORT}`);
 });
