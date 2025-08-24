@@ -9,10 +9,10 @@ It provides real-time seat selection, QR-code based tickets, event management to
 ---
 
 ## 🛠️ Tech Stack
-- **Frontend**: React, TailwindCSS, Socket.IO  
+- **Frontend**: React, TailwindCSS, Socket.IO, Tanstack Query
 - **Backend**: Node.js, Express.js  
-- **Database**: MySQL with Drizzle ORM  
-- **Authentication**: Firebase Authentication  
+- **Database**: MySQL with Drizzle ORM, MongoDB
+- **Authentication**: Google OAuth, OTP Verification, TOTP VErification for Admins 
 - **Real-time**: Redis + Socket.IO  
 - **Queue Management**: BullMQ  
 - **Deployment**: Vercel / DigitalOcean  
@@ -25,12 +25,10 @@ It provides real-time seat selection, QR-code based tickets, event management to
 - 📱 QR-code based tickets with offline access  
 - 🛠️ Event dashboard for organizers  
 - 🗂️ Categorized event browsing  
-- 🔒 Secure authentication with Firebase  
+- 🔒 Secure authentication with Google Oauth and OTP based Auth  
 - 📄 Clear refund & cancellation policy with tracking  
-- 🎨 Mobile-first responsive design with PWA support  
-- 🎫 Waitlist and auto-notify for sold-out events  
-- 🧾 Combo tickets, coupons, and referral discounts  
-- 📅 Add-to-calendar and reminder functionality  
+- 🎨 Mobile-first responsive design    
+- 🧾 Combo tickets, coupons, and referral discounts    
 - 💬 In-event chatrooms for attendee communication  
 - 📍 Support for small-town and college-level events  
 
