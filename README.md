@@ -12,7 +12,7 @@ It provides real-time seat selection, QR-code based tickets, event management to
 - **Frontend**: React, TailwindCSS, Socket.IO, Tanstack Query
 - **Backend**: Node.js, Express.js  
 - **Database**: MySQL with Drizzle ORM, MongoDB
-- **Authentication**: Google OAuth, OTP Verification, TOTP VErification for Admins 
+- **Authentication**: Google OAuth, OTP Verification, TOTP Verification for Admins 
 - **Real-time**: Redis + Socket.IO  
 - **Queue Management**: BullMQ  
 - **Deployment**: Vercel / DigitalOcean  
