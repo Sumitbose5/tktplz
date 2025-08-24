@@ -1,5 +1,3 @@
-# 🎟️ TktPlz
-
 <p align="center">
   <img src="https://res.cloudinary.com/dgxc8nspo/image/upload/v1749873899/maw2lnlkowbftjvtldna.png" alt="TktPlz Logo" width="200"/>
 </p>
