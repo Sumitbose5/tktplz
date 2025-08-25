@@ -481,39 +481,40 @@ export const CreateEvent = () => {
     const getTotalZoneParticipants = (zones) => zones.reduce((sum, z) => sum + Number(z.participants || 0), 0);
 
     const renderStepOne = () => (
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
             <div className="text-center">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Event Basics</h2>
-                <p className="text-gray-600">Let's start with the fundamentals of your event</p>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Event Basics</h2>
+                <p className="text-gray-600 text-sm sm:text-base">Let's start with the fundamentals of your event</p>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-3">Event Name</label>
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">Event Name</label>
                     <input
                         type="text"
                         placeholder="Enter your event name"
                         value={formData.eventName}
                         onChange={(e) => setFormData({ ...formData, eventName: e.target.value })}
-                        className="w-full border-2 border-gray-200 rounded-xl p-4 text-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
+                        className="w-full border-2 border-gray-200 rounded-lg sm:rounded-xl p-3 sm:p-4 text-base sm:text-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 shadow-sm hover:shadow-md bg-white"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-4">Event Type</label>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-4">Event Type</label>
+                    <div className="grid grid-cols-2 grid-rows-2 gap-3 sm:gap-4">
                         {eventTypes.map(({ name, icon: Icon }) => (
                             <button
                                 key={name}
                                 onClick={() => handleTypeSelect(name)}
-                                className={`p-6 border-2 rounded-xl flex flex-col items-center gap-3 transition-all hover:shadow-md ${
+                                className={`p-3 sm:p-6 border-2 rounded-lg sm:rounded-xl flex flex-row sm:flex-col items-center gap-2 sm:gap-3 transition-all hover:shadow-md ${
                                     formData.type === name 
                                         ? "bg-blue-50 border-blue-500 text-blue-700 shadow-md" 
                                         : "border-gray-200 hover:border-gray-300"
                                 }`}
+                                style={{ minWidth: 0 }}
                             >
-                                <Icon className="w-8 h-8" />
-                                <span className="font-medium">{name}</span>
+                                <Icon className="w-6 h-6 sm:w-8 sm:h-8" />
+                                <span className="font-medium text-xs sm:text-base">{name}</span>
                             </button>
                         ))}
                     </div>
@@ -521,13 +522,13 @@ export const CreateEvent = () => {
 
                 {formData.type && (
                     <div className="animate-fadeIn">
-                        <label className="block text-sm font-semibold text-gray-700 mb-4">Event Subtype</label>
-                        <div className="flex gap-3 flex-wrap">
+                        <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-4">Event Subtype</label>
+                        <div className="flex flex-wrap gap-2 sm:gap-3">
                             {subTypes[formData.type].map((st) => (
                                 <button
                                     key={st}
                                     onClick={() => handleSubtypeSelect(st)}
-                                    className={`px-6 py-3 border-2 rounded-full font-medium transition-all hover:shadow-sm ${
+                                    className={`px-3 py-2 sm:px-6 sm:py-3 border-2 rounded-full font-medium transition-all hover:shadow-sm text-xs sm:text-base ${
                                         formData.subtype === st 
                                             ? "bg-orange-50 border-orange-500 text-orange-700" 
                                             : "border-gray-200 hover:border-gray-300"
@@ -541,15 +542,15 @@ export const CreateEvent = () => {
                 )}
             </div>
 
-            <div className="flex justify-between pt-6 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row justify-between pt-4 sm:pt-6 border-t border-gray-200 gap-2 sm:gap-0">
                 <div></div>
                 <button
                     onClick={handleNextStep}
                     disabled={!isStepOneValid() || (formData.type === "Seating" && !slotAvailable)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg sm:rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 text-xs sm:text-base"
                 >
                     Next Step
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                 </button>
@@ -1605,36 +1606,33 @@ export const CreateEvent = () => {
 
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
-            <div className="max-w-4xl mx-auto px-6">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-4 sm:py-8">
+            <div className="max-w-4xl mx-auto px-2 sm:px-6">
                 {/* Header */}
-                <div className="text-center mb-8">
-                    {/* <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
-                        <span className="text-2xl text-white">🎉</span>
-                    </div> */}
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Create Your Event</h1>
-                    <p className="text-gray-600 text-lg">Step {step} of 3 - Let's bring your event to life</p>
+                <div className="text-center mb-6 sm:mb-8">
+                    <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2">Create Your Event</h1>
+                    <p className="text-gray-600 text-base sm:text-lg">Step {step} of 3 - Let's bring your event to life</p>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="mb-8">
+                <div className="mb-6 sm:mb-8">
                     <div className="flex items-center justify-between mb-2">
                         {[1, 2, 3].map((stepNum) => (
                             <div key={stepNum} className="flex items-center">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${
+                                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold ${
                                     step >= stepNum ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500'
                                 }`}>
                                     {stepNum}
                                 </div>
                                 {stepNum < 3 && (
-                                    <div className={`w-24 h-1 mx-2 rounded-full ${
+                                    <div className={`w-10 h-1 sm:w-24 mx-1 sm:mx-2 rounded-full ${
                                         step > stepNum ? 'bg-blue-600' : 'bg-gray-200'
                                     }`}></div>
                                 )}
                             </div>
                         ))}
                     </div>
-                    <div className="flex justify-between text-sm text-gray-600">
+                    <div className="flex justify-between text-xs sm:text-sm text-gray-600">
                         <span>Event Basics</span>
                         <span>Event Details</span>
                         <span>Payment Info</span>
@@ -1642,7 +1640,7 @@ export const CreateEvent = () => {
                 </div>
 
                 {/* Content Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-8">
+                <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-8">
                     {step === 1 && renderStepOne()}
                     {step === 2 && renderStepTwo()}
                     {step === 3 && renderStepThreeWithSpinner()}

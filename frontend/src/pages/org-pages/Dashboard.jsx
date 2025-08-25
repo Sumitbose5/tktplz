@@ -99,54 +99,50 @@ export const OrganiserDashboard = () => {
   console.log('Pie data:', pieData);
 
   return (
-    <div className="space-y-8">
+  <div className="space-y-8 px-2 sm:px-4 md:px-8 max-w-6xl mx-auto">
       {/* Dashboard Summary */}
       <section id="dashboard">
         <h3 className="text-2xl font-bold text-gray-900 mb-6">Dashboard Summary</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-gray-500 uppercase">Total Events</h4>
-                <p className="text-3xl font-bold text-blue-600 mt-1">{totalEvents}</p>
-              </div>
+        {/* Responsive: 2-row 2-col grid on mobile, 4-col on desktop. Smaller badge and text for mobile. */}
+        <div className="grid grid-cols-2 grid-rows-2 gap-3 sm:grid-cols-2 sm:grid-rows-2 lg:grid-cols-4 lg:grid-rows-1 lg:gap-6">
+          {/* Total Events */}
+          <div className="bg-white p-2 sm:p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+              <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+            </div>
+            <div>
+              <h4 className="text-xs sm:text-sm font-medium text-gray-500 uppercase">Total Events</h4>
+              <p className="text-xl sm:text-3xl font-bold text-blue-600 mt-1">{totalEvents}</p>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Users className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-gray-500 uppercase">Tickets Sold</h4>
-                <p className="text-3xl font-bold text-blue-600 mt-1">{ticketsSold}</p>
-              </div>
+          {/* Tickets Sold */}
+          <div className="bg-white p-2 sm:p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
+            </div>
+            <div>
+              <h4 className="text-xs sm:text-sm font-medium text-gray-500 uppercase">Tickets Sold</h4>
+              <p className="text-xl sm:text-3xl font-bold text-blue-600 mt-1">{ticketsSold}</p>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-yellow-600" />
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-gray-500 uppercase">Gross Revenue</h4>
-                <p className="text-3xl font-bold text-blue-600 mt-1">₹{grossRevenue}</p>
-              </div>
+          {/* Gross Revenue */}
+          <div className="bg-white p-2 sm:p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600" />
+            </div>
+            <div>
+              <h4 className="text-xs sm:text-sm font-medium text-gray-500 uppercase">Gross Revenue</h4>
+              <p className="text-xl sm:text-3xl font-bold text-blue-600 mt-1">₹{grossRevenue}</p>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-5 h-5 text-red-600" />
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-gray-500 uppercase">Pending Payments</h4>
-                <p className="text-3xl font-bold text-red-600 mt-1">₹{pendingPayments || 0}</p>
-              </div>
+          {/* Pending Payments */}
+          <div className="bg-white p-2 sm:p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-100 rounded-lg flex items-center justify-center">
+              <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
+            </div>
+            <div>
+              <h4 className="text-xs sm:text-sm font-medium text-gray-500 uppercase">Pending Payments</h4>
+              <p className="text-xl sm:text-3xl font-bold text-red-600 mt-1">₹{pendingPayments || 0}</p>
             </div>
           </div>
         </div>
@@ -165,8 +161,8 @@ export const OrganiserDashboard = () => {
               onAction={() => window.location.href = '/organiser/create-event'}
             />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
+            <div className="overflow-x-auto custom-scroll">
+              <table className="min-w-[500px] w-full text-left text-xs sm:text-sm">
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="p-4 text-sm font-medium text-gray-500 uppercase">Event Name</th>
@@ -196,7 +192,7 @@ export const OrganiserDashboard = () => {
                 <div className="p-4 border-t border-gray-100 text-center">
                   <button 
                     onClick={() => window.location.href = '/organiser/events'}
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium px-4 py-2 rounded-lg"
                   >
                     View All Events ({events.length})
                   </button>
@@ -210,7 +206,7 @@ export const OrganiserDashboard = () => {
       {/* Financial Summary */}
       <section id="financials">
         <h3 className="text-2xl font-bold text-gray-900 mb-6">Financial Summary</h3>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <h4 className="text-lg font-semibold text-gray-800 mb-4">Revenue Summary</h4>
             {pieData.length === 0 ? (
@@ -219,8 +215,8 @@ export const OrganiserDashboard = () => {
                 <p className="text-gray-500 text-sm">No revenue data available</p>
               </div>
             ) : (
-              <div className="flex items-center justify-center">
-                <PieChart width={200} height={200}>
+              <div className="flex flex-col sm:flex-row items-center justify-center">
+                <PieChart width={180} height={180}>
                   <Pie 
                     data={pieData} 
                     dataKey="value" 
@@ -237,7 +233,7 @@ export const OrganiserDashboard = () => {
                   </Pie> 
                   <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']} />
                 </PieChart>
-                <div className="ml-4 space-y-2">
+                <div className="sm:ml-4 mt-4 sm:mt-0 space-y-2 w-full">
                   {pieData.map((entry, index) => (
                     <div key={entry.name} className="flex items-center text-sm">
                       <div 
@@ -261,8 +257,8 @@ export const OrganiserDashboard = () => {
                 description="Transaction history will appear here once customers start booking your events."
               />
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
+              <div className="overflow-x-auto custom-scroll">
+                <table className="min-w-[400px] w-full text-left text-xs sm:text-sm">
                   <thead>
                     <tr className="bg-gray-50">
                       <th className="p-4 text-sm font-medium text-gray-500 uppercase">Customer</th>
@@ -288,7 +284,7 @@ export const OrganiserDashboard = () => {
                   <div className="p-4 border-t border-gray-100 text-center">
                     <button 
                       onClick={() => window.location.href = '/organiser/transactions'}
-                      className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                      className="text-blue-600 hover:text-blue-800 text-sm font-medium px-4 py-2 rounded-lg"
                     >
                       View All Transactions ({ticketDetails.length})
                     </button>
@@ -311,8 +307,8 @@ export const OrganiserDashboard = () => {
               description="Customer information will appear here once people start booking your events."
             />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
+            <div className="overflow-x-auto custom-scroll">
+              <table className="min-w-[400px] w-full text-left text-xs sm:text-sm">
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="p-4 text-sm font-medium text-gray-500 uppercase">Name</th>
@@ -336,7 +332,7 @@ export const OrganiserDashboard = () => {
                 <div className="p-4 border-t border-gray-100 text-center">
                   <button 
                     onClick={() => window.location.href = '/organiser/attendees'}
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium px-4 py-2 rounded-lg"
                   >
                     View All Attendees ({ticketDetails.length})
                   </button>

@@ -49,7 +49,7 @@ export const ProtectedOrganiserLayout = () => {
     useEffect(() => {
         const checkBankingDetails = async () => {
             if (!user?.id) return;
-            
+
             try {
                 const response = await fetch(`http://localhost:3000/api/organizer/details-exist/${user.id}`, {
                     method: 'GET',
@@ -60,7 +60,7 @@ export const ProtectedOrganiserLayout = () => {
                 });
 
                 const result = await response.json();
-                
+
                 if (!result.exists) {
                     setShowPaymentModal(true);
                 }
@@ -76,7 +76,7 @@ export const ProtectedOrganiserLayout = () => {
 
     const handlePaymentSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!upiId || !bankingName) {
             toast.error('Please fill all fields');
             return;
@@ -98,7 +98,7 @@ export const ProtectedOrganiserLayout = () => {
             });
 
             const result = await response.json();
-            
+
             if (result.success) {
                 toast.success('Payment details added successfully!');
                 setShowPaymentModal(false);
@@ -123,9 +123,9 @@ export const ProtectedOrganiserLayout = () => {
             >
                 <div className="flex items-center justify-between px-6 py-6 border-b border-slate-700/50">
                     <div className="flex items-center gap-3">
-                        <img 
-                            src="/images/logo2.PNG" 
-                            alt="TktPlz" 
+                        <img
+                            src="/images/logo2.PNG"
+                            alt="TktPlz"
                             className="w-24 h-10 object-contain"
                         />
                     </div>
@@ -149,90 +149,85 @@ export const ProtectedOrganiserLayout = () => {
                         </div>
                     </div>
                 </div>
-                <nav className="flex flex-col gap-2 px-4 py-6">
+                <nav className="flex flex-col gap-1 sm:gap-2 px-4 py-6">
                     <NavLink
                         to="/organiser/dashboard"
                         onClick={() => setSidebarOpen(false)}
                         className={({ isActive }) =>
-                            `flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${
-                                isActive
-                                    ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white border border-blue-500/30 shadow-lg"
-                                    : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                            `flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${isActive
+                                ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white border border-blue-500/30 shadow-lg"
+                                : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
                             }`
                         }
                     >
-                        <FaHome className="w-5 h-5 group-hover:scale-110 transition-transform" /> 
+                        <FaHome className="w-5 h-5 group-hover:scale-110 transition-transform" />
                         <span>Dashboard</span>
                     </NavLink>
                     <NavLink
                         to="/organiser/events"
                         onClick={() => setSidebarOpen(false)}
                         className={({ isActive }) =>
-                            `flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${
-                                isActive
-                                    ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white border border-blue-500/30 shadow-lg"
-                                    : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                            `flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${isActive
+                                ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white border border-blue-500/30 shadow-lg"
+                                : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
                             }`
                         }
                     >
-                        <FaCalendarAlt className="w-5 h-5 group-hover:scale-110 transition-transform" /> 
+                        <FaCalendarAlt className="w-5 h-5 group-hover:scale-110 transition-transform" />
                         <span>My Events</span>
                     </NavLink>
                     <NavLink
                         to="/organiser/analytics"
                         onClick={() => setSidebarOpen(false)}
                         className={({ isActive }) =>
-                            `flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${
-                                isActive
-                                    ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white border border-blue-500/30 shadow-lg"
-                                    : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                            `flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${isActive
+                                ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white border border-blue-500/30 shadow-lg"
+                                : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
                             }`
                         }
                     >
-                        <FaChartLine className="w-5 h-5 group-hover:scale-110 transition-transform" /> 
+                        <FaChartLine className="w-5 h-5 group-hover:scale-110 transition-transform" />
                         <span>Analytics</span>
                     </NavLink>
                     <NavLink
                         to="/organiser/scan-qr"
                         onClick={() => setSidebarOpen(false)}
                         className={({ isActive }) =>
-                            `flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${
-                                isActive
-                                    ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white border border-blue-500/30 shadow-lg"
-                                    : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                            `flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${isActive
+                                ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white border border-blue-500/30 shadow-lg"
+                                : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
                             }`
                         }
                     >
-                        <FaQrcode className="w-5 h-5 group-hover:scale-110 transition-transform" /> 
+                        <FaQrcode className="w-5 h-5 group-hover:scale-110 transition-transform" />
                         <span>Scan QR</span>
                     </NavLink>
                     <NavLink
                         to="/organiser/invoice"
                         onClick={() => setSidebarOpen(false)}
                         className={({ isActive }) =>
-                            `flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${
-                                isActive
-                                    ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white border border-blue-500/30 shadow-lg"
-                                    : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                            `flex items-center gap-3 px-3 py-2 sm:px-4 sm:py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${isActive
+                                ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white border border-blue-500/30 shadow-lg"
+                                : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
                             }`
                         }
                     >
-                        <FaFileInvoice className="w-5 h-5 group-hover:scale-110 transition-transform" /> 
+                        <FaFileInvoice className="w-5 h-5 group-hover:scale-110 transition-transform" />
                         <span>Income Receipt</span>
                     </NavLink>
                     <NavLink
                         to="/organiser/report-issue"
                         onClick={() => setSidebarOpen(false)}
                         className={({ isActive }) =>
-                            `flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${
-                                isActive
-                                    ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white border border-blue-500/30 shadow-lg"
-                                    : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                            `flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 group ${isActive
+                                ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-white border border-blue-500/30 shadow-lg"
+                                : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
                             }`
                         }
                     >
-                        <FaBug className="w-5 h-5 group-hover:scale-110 transition-transform" /> 
-                        <span>Report an Issue</span>
+                        <FaBug className="w-5 h-5 group-hover:scale-110 transition-transform max-sm:relative max-sm:right-1" />
+                        <span className="max-sm:relative max-sm:right-2">Report an Issue</span>
+
 
                     </NavLink>
                 </nav>
@@ -242,7 +237,7 @@ export const ProtectedOrganiserLayout = () => {
                         onClick={logout}
                         className="w-full flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 group border border-red-500/20 hover:border-red-500/40"
                     >
-                        <FaSignOutAlt className="w-5 h-5 group-hover:scale-110 transition-transform" /> 
+                        <FaSignOutAlt className="w-5 h-5 group-hover:scale-110 transition-transform" />
                         <span>Logout</span>
                     </button>
                 </div>
@@ -259,12 +254,12 @@ export const ProtectedOrganiserLayout = () => {
                     >
                         <Menu className="w-6 h-6 text-gray-600" />
                     </button>
-                    
+
                     {/* Logo and Brand */}
                     <div className="flex flex-col items-center gap-1">
-                        <img 
-                            src="https://res.cloudinary.com/dgxc8nspo/image/upload/v1749873899/maw2lnlkowbftjvtldna.png" 
-                            alt="TktPlz" 
+                        <img
+                            src="https://res.cloudinary.com/dgxc8nspo/image/upload/v1749873899/maw2lnlkowbftjvtldna.png"
+                            alt="TktPlz"
                             className="w-26 h-8 object-cover object-center"
                         />
                         {/* <p className="text-xs text-gray-500 font-medium">Organiser Dashboard</p> */}
@@ -280,13 +275,26 @@ export const ProtectedOrganiserLayout = () => {
                 {/* Create Event Button */}
                 <button
                     onClick={handleClick}
-                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-200 transform hover:scale-105"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg shadow-md 
+             hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-1 
+             transition-transform duration-200 ease-in-out transform hover:scale-105 active:scale-95"
                 >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 4v16m8-8H4"
+                        />
                     </svg>
                     <span className="hidden sm:inline">Create Event</span>
                 </button>
+
             </header>
 
             {/* Content */}
@@ -308,7 +316,7 @@ export const ProtectedOrganiserLayout = () => {
                                 <h2 className="text-2xl font-bold mb-2">Payment Details Required</h2>
                                 <p className="text-blue-100">Complete your profile to start receiving payments</p>
                             </div>
-                            
+
                             <form onSubmit={handlePaymentSubmit} className="p-6 space-y-6">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -324,7 +332,7 @@ export const ProtectedOrganiserLayout = () => {
                                         required
                                     />
                                 </div>
-                                
+
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         <CreditCard className="w-4 h-4 inline mr-2" />
@@ -339,15 +347,14 @@ export const ProtectedOrganiserLayout = () => {
                                         required
                                     />
                                 </div>
-                                
+
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className={`w-full py-3 px-4 rounded-lg font-medium transition-all ${
-                                        submitting 
-                                            ? 'bg-gray-400 cursor-not-allowed' 
-                                            : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transform hover:scale-105'
-                                    } text-white shadow-lg`}
+                                    className={`w-full py-3 px-4 rounded-lg font-medium transition-all ${submitting
+                                        ? 'bg-gray-400 cursor-not-allowed'
+                                        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transform hover:scale-105'
+                                        } text-white shadow-lg`}
                                 >
                                     {submitting ? (
                                         <div className="flex items-center justify-center gap-2">

@@ -4,6 +4,7 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 import { FiBell, FiUser, FiBookOpen, FiLogOut, FiChevronRight, FiSettings, FiHelpCircle, FiGift, FiLock, FiPlus, FiPercent, FiArrowLeft, FiX } from "react-icons/fi";
+import { Ticket } from "lucide-react";
 
 export const Sidebar = () => {
     const { isSidebarOpen, setSidebarOpen, showLoginModal } = useModal();
@@ -139,8 +140,8 @@ export const Sidebar = () => {
                         {user && (
                             <li>
                                 <NavLink to="/your-orders" className="flex items-center px-4 sm:px-6 py-3 sm:py-4 hover:bg-gray-50 transition group touch-manipulation" onClick={() => setSidebarOpen(false)}>
-                                    <FiBookOpen className="text-lg sm:text-xl text-blue-500 mr-3 sm:mr-4 flex-shrink-0" />
-                                    <span className="flex-1 text-gray-800 text-sm sm:text-base">Your Orders</span>
+                                    <Ticket className="text-lg sm:text-xl text-blue-500 mr-3 sm:mr-4 flex-shrink-0" />
+                                    <span className="flex-1 text-gray-800 text-sm sm:text-base">My Tickets</span>
                                     <FiChevronRight className="text-gray-400 group-hover:text-blue-500 flex-shrink-0" />
                                 </NavLink>
                             </li>

@@ -120,15 +120,13 @@ const MyEvents = () => {
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
             <div className="max-w-6xl mx-auto">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800">My Events</h1>
-                    <div className="flex flex-wrap items-center gap-3 bg-white rounded-lg shadow-sm px-4 py-2">
-                        <div className="flex items-center gap-2">
-                            <Filter className="w-5 h-5 text-blue-500" />
-                            <span className="font-medium text-gray-700">Filter by:</span>
-                        </div>
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-4 mb-8">
+                    <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-800 mb-2 md:mb-0">My Events</h1>
+                    <div className="flex items-center gap-2 bg-white rounded-lg shadow-sm px-2 py-1 sm:px-4 sm:py-2 min-w-[140px] sm:min-w-[220px]">
+                        <Filter className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
+                        <span className="font-medium text-gray-700 text-xs sm:text-sm">Filter by:</span>
                         <select
-                            className="border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 bg-gray-50"
+                            className="border border-gray-200 rounded-md px-2 py-1 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 bg-gray-50"
                             value={typeFilter}
                             onChange={e => setTypeFilter(e.target.value)}
                         >
@@ -137,7 +135,7 @@ const MyEvents = () => {
                             ))}
                         </select>
                         <select
-                            className="border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 bg-gray-50"
+                            className="border border-gray-200 rounded-md px-2 py-1 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 bg-gray-50"
                             value={statusFilter}
                             onChange={e => setStatusFilter(e.target.value)}
                         >
