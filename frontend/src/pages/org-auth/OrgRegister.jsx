@@ -31,7 +31,7 @@ export const OrganiserRegisterPage = () => {
 
         setLoading(true);
         try {
-            const response = await fetch("http://localhost:3000/api/auth/orgn-reg", {
+            const response = await fetch(import.meta.env.VITE_BASE_URL + "/api/auth/orgn-reg", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),

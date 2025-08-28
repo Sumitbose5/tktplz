@@ -9,7 +9,7 @@ import LoadingSpinner from '../Other/LoadingSpinner'
 import { useAuth } from "../../context/AuthContext";
 import { useModal } from "../../context/ModalContext";
 
-const socket = io.connect("http://localhost:3000");
+const socket = io.connect(import.meta.env.VITE_BASE_URL + "");
 
 const zoneColors = {
   'Regular': 'bg-gray-300 hover:bg-gray-400',

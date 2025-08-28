@@ -19,7 +19,7 @@ const Financials = () => {
       setLoading(true);
       setError("");
       try {
-        const res = await fetch("http://localhost:3000/api/payment/payout-summary", {
+        const res = await fetch(import.meta.env.VITE_BASE_URL + "/api/payment/payout-summary", {
             method: "GET",
             credentials: "include"
         });

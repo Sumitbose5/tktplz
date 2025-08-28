@@ -27,7 +27,7 @@ export default function IssueDetails() {
   const handleResolve = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/api/admin/resolve-issue", {
+      const res = await fetch(import.meta.env.VITE_BASE_URL + "/api/admin/resolve-issue", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ issueId: id }),

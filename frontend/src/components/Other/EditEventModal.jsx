@@ -93,7 +93,7 @@ export default function EditEventModal({ isOpen, onClose, eventData, onSuccess }
   const handleSaveBasic = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/api/event/update-details", {
+      const res = await fetch(import.meta.env.VITE_BASE_URL + "/api/event/update-details", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ eventId: eventData.id, details: basicDetails })
@@ -115,7 +115,7 @@ export default function EditEventModal({ isOpen, onClose, eventData, onSuccess }
   const handleSaveTicket = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/api/event/update-ticket-details", {
+      const res = await fetch(import.meta.env.VITE_BASE_URL + "/api/event/update-ticket-details", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -146,7 +146,7 @@ export default function EditEventModal({ isOpen, onClose, eventData, onSuccess }
       // 1. Upload poster
       const formData = new FormData();
       formData.append("poster", posterFile);
-      const uploadRes = await fetch("http://localhost:3000/api/event/upload-poster", {
+      const uploadRes = await fetch(import.meta.env.VITE_BASE_URL + "/api/event/upload-poster", {
         method: "POST",
         body: formData,
       });
@@ -155,7 +155,7 @@ export default function EditEventModal({ isOpen, onClose, eventData, onSuccess }
         throw new Error("Poster upload failed");
       }
       // 2. Update poster URL
-      const updateRes = await fetch("http://localhost:3000/api/event/update-poster-url", {
+      const updateRes = await fetch(import.meta.env.VITE_BASE_URL + "/api/event/update-poster-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ eventId: eventData.id, posterUrl: uploadData.data.secure_url })

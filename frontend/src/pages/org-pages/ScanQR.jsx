@@ -20,7 +20,7 @@ const ScanQR = () => {
     setLoading(true);
     try {
       const parsedData = JSON.parse(qrData);
-      const response = await fetch('http://localhost:3000/api/organizer/scan-qr', {
+      const response = await fetch(import.meta.env.VITE_BASE_URL + '/api/organizer/scan-qr', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

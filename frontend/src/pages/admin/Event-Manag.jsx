@@ -29,7 +29,7 @@ export const EventManagement = () => {
   // Fetch logic moved to a function
   const fetchData = () => {
     setLoading(true);
-    fetch('http://localhost:3000/api/event/get-all-events')
+    fetch(import.meta.env.VITE_BASE_URL + '/api/event/get-all-events')
       .then(res => res.json())
       .then(data => {
         if (data.success) setEvents(data.data || []);
@@ -37,7 +37,7 @@ export const EventManagement = () => {
       .catch(() => toast.error('Failed to fetch events'))
       .finally(() => setLoading(false));
     setLoadingApprovals(true);
-    fetch('http://localhost:3000/api/admin/event-approval')
+    fetch(import.meta.env.VITE_BASE_URL + '/api/admin/event-approval')
       .then(res => res.json())
       .then(data => {
         if (data.success) setApprovalRequests(data.data || []);
@@ -52,7 +52,7 @@ export const EventManagement = () => {
 
   const handleApprove = async (eventId) => {
     try {
-      const res = await fetch('http://localhost:3000/api/admin/approve-event', {
+      const res = await fetch(import.meta.env.VITE_BASE_URL + '/api/admin/approve-event', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ eventId }),
@@ -72,7 +72,7 @@ export const EventManagement = () => {
 
   const handleReject = async (eventId) => {
     try {
-      const res = await fetch('http://localhost:3000/api/admin/reject-event', {
+      const res = await fetch(import.meta.env.VITE_BASE_URL + '/api/admin/reject-event', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ eventId }),

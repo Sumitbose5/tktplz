@@ -22,7 +22,7 @@ export const AdminRoute = ({ children }) => {
   useEffect(() => {
     const checkAccess = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/auth/verify-admin", {
+        const res = await fetch(import.meta.env.VITE_BASE_URL + "/api/auth/verify-admin", {
           method: "GET",
           credentials: "include", // important for cookies
         });

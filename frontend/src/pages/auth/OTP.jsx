@@ -27,7 +27,7 @@ export const OTP = () => {
 
             const email = emailData;
 
-            const res = await fetch("http://localhost:3000/api/auth/verify-otp", {
+            const res = await fetch(import.meta.env.VITE_BASE_URL + "/api/auth/verify-otp", {
                 method: "POST",
                 credentials: "include", // Allow cookies to be sent and received
                 headers: { "Content-Type": "application/json" },

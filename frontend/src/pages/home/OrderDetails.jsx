@@ -116,7 +116,7 @@ const OrderDetails = () => {
   const handlePrintTicket = async () => { 
     setIsDownloading(true);
     try {
-      const response = await fetch('http://localhost:3000/api/ticket/download', {
+      const response = await fetch(import.meta.env.VITE_BASE_URL + '/api/ticket/download', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -208,7 +208,7 @@ const OrderDetails = () => {
   const handleCancelTicket = async () => {
     setIsProcessing(true);
     try {
-      const response = await fetch('http://localhost:3000/api/payment/refund', {
+      const response = await fetch(import.meta.env.VITE_BASE_URL + '/api/payment/refund', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

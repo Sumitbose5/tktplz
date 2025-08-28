@@ -124,7 +124,7 @@ function SuccessfulPayment() {
               if (isDownloading) return;
               setIsDownloading(true);
               try {
-                const response = await axios.post('http://localhost:3000/api/ticket/download', 
+                const response = await axios.post(import.meta.env.VITE_BASE_URL + '/api/ticket/download', 
                   { orderId },
                   { responseType: 'blob' }
                 );

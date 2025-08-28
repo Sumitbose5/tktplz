@@ -49,7 +49,7 @@ export const MobileAuth = () => {
             const idToken = await res.user.getIdToken();
 
             // Send token to backend for verification and DB storage
-            const serverRes = await axios.post('http://localhost:3000/auth/verify', { idToken });
+            const serverRes = await axios.post(import.meta.env.VITE_BASE_URL + '/auth/verify', { idToken });
             toast.success(`Logged in as ${serverRes.data.phoneNumber}`);
         } catch (err) {
             console.error(err);

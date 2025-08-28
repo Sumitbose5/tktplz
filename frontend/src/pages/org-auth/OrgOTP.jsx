@@ -21,7 +21,7 @@ export const OrganiserOtpVerifyPage = () => {
         setLoading(true);
         try {
             console.log("Email Data inside try : ", emailData);
-            const response = await fetch("http://localhost:3000/api/auth/verify-otp", {
+            const response = await fetch(import.meta.env.VITE_BASE_URL + "/api/auth/verify-otp", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: 'include',

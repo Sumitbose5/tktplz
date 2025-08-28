@@ -112,7 +112,7 @@ export default function EditSeatLayout({ screenID, hallID, onClose }) {
         hallID,
         screenID,
       };
-      await axios.post("http://localhost:3000/api/halls/createSeatLayout", payload);
+      await axios.post(import.meta.env.VITE_BASE_URL + "/api/halls/createSeatLayout", payload);
       toast.success("Seat layout updated!");
       onClose();
     } catch (err) {

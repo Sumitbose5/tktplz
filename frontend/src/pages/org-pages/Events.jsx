@@ -255,7 +255,7 @@ const MyEvents = () => {
                                     onClick={async () => {
                                         setDeleting(true);
                                         try {
-                                            const res = await fetch("http://localhost:3000/api/event/delete-event", {
+                                            const res = await fetch(import.meta.env.VITE_BASE_URL + "/api/event/delete-event", {
                                                 method: "POST",
                                                 headers: { "Content-Type": "application/json" },
                                                 body: JSON.stringify({ eventId: eventToDelete.id })

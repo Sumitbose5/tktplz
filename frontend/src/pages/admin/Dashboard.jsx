@@ -22,7 +22,7 @@ export const AdminDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/admin/get-dashboard', {
+      const response = await fetch(import.meta.env.VITE_BASE_URL + '/api/admin/get-dashboard', {
         method: 'GET',
         credentials: 'include',
         headers: {

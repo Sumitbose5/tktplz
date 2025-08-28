@@ -38,7 +38,7 @@ export const RegisterPage = () => {
         const name = username;
 
         try {
-            const res = await fetch("http://localhost:3000/api/auth/user-reg", {
+            const res = await fetch(import.meta.env.VITE_BASE_URL + "/api/auth/user-reg", {
                 method: "POST",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },

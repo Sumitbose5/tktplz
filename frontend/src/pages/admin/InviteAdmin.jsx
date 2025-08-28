@@ -75,7 +75,7 @@ export const InviteAdmin = () => {
     setLoading(true);
     
     try {
-      const response = await fetch('http://localhost:3000/api/auth/admin/invite', {
+      const response = await fetch(import.meta.env.VITE_BASE_URL + '/api/auth/admin/invite', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

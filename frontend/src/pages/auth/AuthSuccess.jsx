@@ -17,7 +17,7 @@ export const AuthSuccess = () => {
 
     const verifyGoogleLogin = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/auth/me", {
+        const res = await fetch(import.meta.env.VITE_BASE_URL + "/api/auth/me", {
           credentials: "include",
         });
         const data = await res.json();

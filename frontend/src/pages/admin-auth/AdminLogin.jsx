@@ -14,7 +14,7 @@ export const AdminLoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:3000/api/auth/admin/login", {
+      const res = await axios.post(import.meta.env.VITE_BASE_URL + "/api/auth/admin/login", {
         email,
         password,
         token,

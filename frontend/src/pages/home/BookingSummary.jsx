@@ -55,7 +55,7 @@ function BookingSummary() {
     
     const eventType = eventDetails.type;
     try {
-      await axios.post('http://localhost:3000/api/booking/unlock-items', {
+      await axios.post(import.meta.env.VITE_BASE_URL + '/api/booking/unlock-items', {
         eventId,
         userId,
         eventType,
@@ -106,7 +106,7 @@ function BookingSummary() {
         }
 
         console.log('Sending booking request:', body);
-        const res = await axios.post('http://localhost:3000/api/booking/get-booking-summary', body);
+        const res = await axios.post(import.meta.env.VITE_BASE_URL + '/api/booking/get-booking-summary', body);
         setSummary(res.data);
       } catch (err) {
         if (err.response?.status === 409) {
@@ -150,7 +150,7 @@ function BookingSummary() {
   useEffect(() => {
     const handleUnload = () => {
       if (eventId && userId && eventDetails.type) {
-        navigator.sendBeacon('http://localhost:3000/api/booking/unlock-items', JSON.stringify({
+        navigator.sendBeacon(import.meta.env.VITE_BASE_URL + '/api/booking/unlock-items', JSON.stringify({
           eventId,
           userId,
           eventType: eventDetails.type,

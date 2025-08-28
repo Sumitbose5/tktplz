@@ -54,7 +54,7 @@ const RazorpayButton = ({ totalAmount, summary }) => {
             }
 
             // Create order from backend
-            const orderResponse = await axios.post('http://localhost:3000/api/payment/createOrder', body);
+            const orderResponse = await axios.post(import.meta.env.VITE_BASE_URL + '/api/payment/createOrder', body);
             const orderData = orderResponse.data;
 
             if (!orderData?.success || !orderData?.orderId) {
@@ -78,7 +78,7 @@ const RazorpayButton = ({ totalAmount, summary }) => {
                 handler: async (response) => {
                     try {
                         setVerifying(true);
-                        const verifyResponse = await axios.post('http://localhost:3000/api/payment/verifyPayment', {
+                        const verifyResponse = await axios.post(import.meta.env.VITE_BASE_URL + '/api/payment/verifyPayment', {
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_signature: response.razorpay_signature,

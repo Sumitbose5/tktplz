@@ -176,7 +176,7 @@ export const CreateEvent = () => {
                 const formDataObj = new FormData();
                 formDataObj.append("poster", formData.poster);
 
-                const posterRes = await fetch("http://localhost:3000/api/event/upload-poster", {
+                const posterRes = await fetch(import.meta.env.VITE_BASE_URL + "/api/event/upload-poster", {
                     method: "POST",
                     body: formDataObj,
                 });
@@ -187,7 +187,7 @@ export const CreateEvent = () => {
                     // 3. Update the event with the poster URL
                     setLoadingMsg("Finalizing event...");
                     console.log("Finalizing event...");
-                    const updateRes = await fetch("http://localhost:3000/api/event/update-poster-url", {
+                    const updateRes = await fetch(import.meta.env.VITE_BASE_URL + "/api/event/update-poster-url", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ eventId, posterUrl })
@@ -267,7 +267,7 @@ export const CreateEvent = () => {
     const { data: allHallsData, refetch: refetchHalls, isLoading } = useQuery({
         queryKey: ['all-halls'],
         queryFn: async () => {
-            const response = await fetch('http://localhost:3000/api/event/available-halls', {
+            const response = await fetch(import.meta.env.VITE_BASE_URL + '/api/event/available-halls', {
                 method: 'GET'
             });
             const data = await response.json();
@@ -345,7 +345,7 @@ export const CreateEvent = () => {
                 formData.end
             ) {
                 try {
-                    const res = await fetch("http://localhost:3000/api/event/check-seating-slot", {
+                    const res = await fetch(import.meta.env.VITE_BASE_URL + "/api/event/check-seating-slot", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({

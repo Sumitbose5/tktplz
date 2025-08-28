@@ -19,7 +19,7 @@ export const InviteQRPage = () => {
                 
                 // Mark the invite as visited and fetch QR code in one request
                 // The backend will handle whether this is a first-time view or not
-                const markResponse = await axios.post("http://localhost:3000/api/auth/admin/markInviteVisited", {
+                const markResponse = await axios.post(import.meta.env.VITE_BASE_URL + "/api/auth/admin/markInviteVisited", {
                     email: decodedEmail,
                     token
                 });

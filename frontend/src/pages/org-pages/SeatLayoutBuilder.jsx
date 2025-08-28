@@ -66,7 +66,7 @@ export default function SeatLayoutBuilder({ hallID, screenID }) {
         hallID,
         screenID,
       };
-      const res = await axios.post("http://localhost:3000/api/halls/createSeatLayout", payload);
+      const res = await axios.post(import.meta.env.VITE_BASE_URL + "/api/halls/createSeatLayout", payload);
       setMessage(res.data.message || "Seat layout created!");
     } catch (err) {
       setMessage(err.response?.data?.message || "Error creating seat layout");

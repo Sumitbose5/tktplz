@@ -20,7 +20,7 @@ export const OrganiserLoginPage = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost:3000/api/auth/orgn-login", {
+            const response = await fetch(import.meta.env.VITE_BASE_URL + "/api/auth/orgn-login", {
                 method: "POST",
                 credentials: 'include',
                 headers: { "Content-Type": "application/json" },

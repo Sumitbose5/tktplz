@@ -8,7 +8,7 @@ export const ProtectedRoute = ({ children }) => {
   useEffect(() => {
     const checkAccess = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/auth/verify-organsier", {
+        const res = await fetch(import.meta.env.VITE_BASE_URL + "/api/auth/verify-organsier", {
           method: "GET",
           credentials: "include", 
         });

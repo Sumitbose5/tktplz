@@ -83,7 +83,7 @@ const ReportIssue = () => {
       }
 
       // Replace with actual API endpoint
-      const response = await fetch('http://localhost:3000/api/user/submit-issue', {
+      const response = await fetch(import.meta.env.VITE_BASE_URL + '/api/user/submit-issue', {
         method: 'POST',
         body: formDataToSend,
       });

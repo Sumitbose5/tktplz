@@ -56,7 +56,7 @@ export default function RegisterParticipants() {
     const fetchFields = async () => {
       try {
         setLoading(true);
-        const res = await axios.post("http://localhost:3000/api/event/get-reg-fields", { eventId });
+        const res = await axios.post(import.meta.env.VITE_BASE_URL + "/api/event/get-reg-fields", { eventId });
         const fields = res.data.fields || [];
         const teamReg = res.data.teamRegistration || false;
         const minMembers = res.data.minParticipant || 1;

@@ -94,12 +94,12 @@ const EventInfo = () => {
       };
       
       if (previousState) {
-        await axios.delete('http://localhost:3000/api/user/events/like', {
+        await axios.delete(import.meta.env.VITE_BASE_URL + '/api/user/events/like', {
           data: payload,
           timeout: 5000
         });
       } else {
-        await axios.post('http://localhost:3000/api/user/events/like', payload, {
+        await axios.post(import.meta.env.VITE_BASE_URL + '/api/user/events/like', payload, {
           timeout: 5000
         });
       }

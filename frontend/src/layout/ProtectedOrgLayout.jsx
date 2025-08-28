@@ -17,7 +17,7 @@ export const ProtectedOrganiserLayout = () => {
 
     const logout = async () => {
         try {
-            const res = await fetch("http://localhost:3000/api/auth/logout", {
+            const res = await fetch(import.meta.env.VITE_BASE_URL + "/api/auth/logout", {
                 method: 'GET',
                 credentials: "include",
             });
@@ -84,7 +84,7 @@ export const ProtectedOrganiserLayout = () => {
 
         setSubmitting(true);
         try {
-            const response = await fetch('http://localhost:3000/api/organizer/add-banking-details', {
+            const response = await fetch(import.meta.env.VITE_BASE_URL + '/api/organizer/add-banking-details', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
