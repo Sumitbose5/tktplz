@@ -15,7 +15,7 @@ dotenv.config();
 const server = http.createServer(app);
 const io = new Server(server, { // Initialize Socket.IO with the http server
     cors: {
-        origin: "http://localhost:5173", // Make sure this matches your client-side origin
+        origin: ["http://localhost:5173", "https://tktplz-05.vercel.app"], // Make sure this matches your client-side origin
         credentials: true
     }
 });
