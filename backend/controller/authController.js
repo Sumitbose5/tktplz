@@ -392,17 +392,17 @@ export const googleAuth = (req, res, next) => {
     passport.authenticate("google", { session: false }, (err, user, info) => {
         if (err) {
             console.error("Google Authentication Error:", err);
-            return res.redirect(`http://localhost:5173/auth-error?error=${encodeURIComponent("Internal Server Error")}`);
+            return res.redirect(`${process.env.FRONTEND_URL}/auth-error?error=${encodeURIComponent("Internal Server Error")}`);
         }
 
         if (!user) {
             const errorMessage = info?.message || "Authentication failed";
-            return res.redirect(`http://localhost:5173/auth-error?error=${encodeURIComponent(errorMessage)}`);
+            return res.redirect(`${process.env.FRONTEND_URL}/auth-error?error=${encodeURIComponent(errorMessage)}`);
         }
 
         // Success: set token and redirect
         generateTokenAndSetCookie(user, res);
-        return res.redirect("http://localhost:5173/auth-success");
+        return res.redirect(`${process.env.FRONTEND_URL}/auth-success`);
     })(req, res, next);
 };
 
@@ -515,7 +515,7 @@ export const sendInvite = async (req, res) => {
     });
 
     const qrUrl = secret.otpauth_url;
-    const inviteLink = `http://localhost:5173/admin/invite/${encodeURIComponent(email)}/${token}`;
+    const inviteLink = `${process.env.FRONTEND_URL}/admin/invite/${encodeURIComponent(email)}/${token}`;
 
     // Insert in the visited links DB
     await db.insert(inviteLinks).values({
