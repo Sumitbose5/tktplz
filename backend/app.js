@@ -23,7 +23,7 @@ const io = new Server(server, { // Initialize Socket.IO with the http server
 dbConnect();
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://tktplz-05.vercel.app"],
     credentials: true
 }));
 
