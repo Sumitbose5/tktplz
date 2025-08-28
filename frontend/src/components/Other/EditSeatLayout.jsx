@@ -12,7 +12,7 @@ export default function EditSeatLayout({ screenID, hallID, onClose }) {
 
   // Fetch current seat layout and reconstruct zones
   useEffect(() => {
-    axios.get(`http://localhost:3000/api/halls/seats/${screenID}`)
+    axios.get(`${import.meta.env.VITE_BASE_URL}/api/halls/seats/${screenID}`)
       .then(res => {
         const seatList = res.data.seats || [];
         // Group by seatType

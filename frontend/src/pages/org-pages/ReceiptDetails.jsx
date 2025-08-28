@@ -15,7 +15,7 @@ const ReceiptDetails = () => {
       setLoading(true);
       setError("");
       try {
-        const res = await fetch(`http://localhost:3000/api/payment/payout/${id}`, {
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/payment/payout/${id}`, {
           method: "GET",
           credentials: "include"
         });

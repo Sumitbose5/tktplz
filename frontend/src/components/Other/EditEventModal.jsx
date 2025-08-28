@@ -51,7 +51,7 @@ export default function EditEventModal({ isOpen, onClose, eventData, onSuccess }
       setPosterFile(null);
       // Fetch ticket details
       setTicketLoading(true);
-      fetch(`http://localhost:3000/api/event/ticket-details/${eventData.id}`)
+      fetch(`${import.meta.env.VITE_BASE_URL}/api/event/ticket-details/${eventData.id}`)
         .then(res => res.json())
         .then(data => {
           if (data.success && data.data) {

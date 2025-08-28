@@ -10,7 +10,7 @@ const fetchTicketCategories = async (eventId) => {
     return { categories: [], showTime: "", eventDetails: null };
   }
   try {
-    const res = await fetch(`http://localhost:3000/api/event/get-price-details/${eventId}`);
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/event/get-price-details/${eventId}`);
     if (!res.ok) throw new Error("Failed to fetch");
     const data = await res.json();
     return {

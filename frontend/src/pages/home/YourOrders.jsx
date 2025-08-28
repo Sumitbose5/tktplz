@@ -15,7 +15,7 @@ export const YourOrders = () => {
       if (!userId) return;
       
       try {
-        const response = await fetch(`http://localhost:3000/api/user/get-orders/${userId}`, {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/get-orders/${userId}`, {
           credentials: 'include'
         });
         const data = await response.json();

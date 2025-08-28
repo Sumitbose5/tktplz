@@ -55,7 +55,7 @@ const OrderDetails = () => {
       if (!orderId) return;
       
       try {
-        const response = await fetch(`http://localhost:3000/api/user/getQR/${orderId}`, {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/user/getQR/${orderId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

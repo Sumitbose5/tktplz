@@ -33,7 +33,7 @@ export const InviteQRPage = () => {
 
                 // Fetch the QR code only if marking was successful
                 const res = await axios.get(
-                    `http://localhost:3000/api/auth/admin/invite/${decodedEmail}`
+                    `${import.meta.env.VITE_BASE_URL}/api/auth/admin/invite/${decodedEmail}`
                 );
 
                 setQrCodeUrl(res.data.qrUrl);

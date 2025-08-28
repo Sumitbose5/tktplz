@@ -15,7 +15,7 @@ const Analytics = () => {
       if (!user?.id) return;
       
       try {
-        const response = await fetch(`http://localhost:3000/api/event/get-events/${user.id}`, {
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/event/get-events/${user.id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

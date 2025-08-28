@@ -46,7 +46,7 @@ export default function SeatSelection({ screenID, eventId, eventName, hallName, 
   useEffect(() => {
     const fetchLockedSeats = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/api/booking/get-locked-seats/${eventId}`);
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/booking/get-locked-seats/${eventId}`);
         const seats = response.data.lockedSeats;
         console.log("Seats : ", seats);
         const seatIds = seats.map(seat => seat.seatId);
@@ -101,7 +101,7 @@ export default function SeatSelection({ screenID, eventId, eventName, hallName, 
     const fetchSeats = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:3000/api/halls/seats/${screenID}/${eventId}`);
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/halls/seats/${screenID}/${eventId}`);
         if (response.data.success) {
           setSeats(response.data.seats);
           setPrice(response.data.price);

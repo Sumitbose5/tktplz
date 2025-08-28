@@ -145,7 +145,7 @@ export const CreateEvent = () => {
             // 1. Create the event
             setLoadingMsg("Creating your event...");
             console.log(formData.type);
-            const res = await fetch(`http://localhost:3000/api/event/create/${formData.type}`, {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/event/create/${formData.type}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -289,7 +289,7 @@ export const CreateEvent = () => {
         if (selectedHall) {
             const fetchScreens = async () => {
                 try {
-                    const response = await fetch(`http://localhost:3000/api/event/available-screens/${selectedHall}`);
+                    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/event/available-screens/${selectedHall}`);
                     const data = await response.json();
                     setScreens(data.data?.screens || []);
                 } catch (error) {
@@ -307,7 +307,7 @@ export const CreateEvent = () => {
         queryKey: ['seat-types', selectedScreen],
         queryFn: async () => {
             if (!selectedScreen) return [];
-            const res = await fetch(`http://localhost:3000/api/halls/seat-types/${selectedScreen}`);
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/halls/seat-types/${selectedScreen}`);
             const data = await res.json();
             return data.seatTypes || [];
         },

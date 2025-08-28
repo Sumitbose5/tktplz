@@ -15,7 +15,7 @@ const PayoutDetails = () => {
       setLoading(true);
       setError("");
       try {
-        const res = await fetch(`http://localhost:3000/api/payment/payout/${id}`, {credentials: 'include'});
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/payment/payout/${id}`, {credentials: 'include'});
         const data = await res.json();
         setReceipt(data.data || null);
       } catch (e) {
@@ -166,7 +166,7 @@ return (
                                                                     onClick={async () => {
                                                                         setSendingReceipt(true);
                                                                         try {
-                                                                            const res = await fetch(`http://localhost:3000/api/payment/payout/send-receipt/${receipt.id}`, {
+                                                                            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/payment/payout/send-receipt/${receipt.id}`, {
                                                                                 method: "POST",
                                                                                 credentials: "include"
                                                                             });

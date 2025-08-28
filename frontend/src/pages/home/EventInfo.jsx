@@ -33,8 +33,8 @@ const EventInfo = () => {
         const userId = user?.userData?.id ? user?.userData?.id : user?.id;
         console.log("User id : ", userId);
         const url = userId 
-          ? `http://localhost:3000/api/event/get-event/${eventId}?userId=${userId}`
-          : `http://localhost:3000/api/event/get-event/${eventId}`;
+          ? `${import.meta.env.VITE_BASE_URL}/api/event/get-event/${eventId}?userId=${userId}`
+          : `${import.meta.env.VITE_BASE_URL}/api/event/get-event/${eventId}`;
         const res = await axios.get(url);
         setEvent(res.data.data);
         setIsLiked(res.data.data.isLiked || false);

@@ -18,7 +18,7 @@ const CategorySelect = () => {
       setLoading(true);
       setError("");
       try {
-        const res = await fetch(`http://localhost:3000/api/event/get-events-type/${subtype}`);
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/event/get-events-type/${subtype}`);
         const data = await res.json();
         let filtered = Array.isArray(data.data) ? data.data : [];
         if (city) {

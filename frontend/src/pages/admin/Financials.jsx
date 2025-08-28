@@ -81,7 +81,7 @@ const Financials = () => {
                           onClick={async () => {
                             setSendingReceipt(prev => ({ ...prev, [payout.id]: true }));
                             try {
-                              const res = await fetch(`http://localhost:3000/api/payment/payout/send-receipt/${payout.id}`, {
+                              const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/payment/payout/send-receipt/${payout.id}`, {
                                 method: "POST",
                                 credentials: "include"
                               });
@@ -151,7 +151,7 @@ const Financials = () => {
                 try {
                   // Replace with actual adminId logic if needed
                   const adminId = user?.id || user?.userData?.id;   
-                  const res = await fetch(`http://localhost:3000/api/payment/payout/${showPaymentModal}/initiate`, {
+                  const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/payment/payout/${showPaymentModal}/initiate`, {
                     method: "POST",
                     credentials: "include",
                     headers: { 'Content-Type': 'application/json' },

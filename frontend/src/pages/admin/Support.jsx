@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const PAGE_SIZE = 10;
 
 const fetchIssues = async ({ pageParam = 1 }) => {
-    const res = await fetch(`http://localhost:3000/api/admin/get-all-issues?page=${pageParam}&limit=${PAGE_SIZE}`, {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/admin/get-all-issues?page=${pageParam}&limit=${PAGE_SIZE}`, {
         method: "GET",
         credentials: "include"
     });

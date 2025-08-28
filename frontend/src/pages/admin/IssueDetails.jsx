@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { formatInTimeZone } from "date-fns-tz";
 
 const fetchIssue = async (id) => {
-  const res = await fetch(`http://localhost:3000/api/admin/get-all-issues?id=${id}`, {
+  const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/admin/get-all-issues?id=${id}`, {
     method: "GET",
     credentials: "include"
   });

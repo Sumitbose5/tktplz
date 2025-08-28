@@ -17,7 +17,7 @@ export default function SeatStructure() {
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get(`http://localhost:3000/api/event/get-event/${eventId}`);
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/event/get-event/${eventId}`);
         setEventData(res.data.data);
       } catch (e) {
         setError("Failed to load event details.");

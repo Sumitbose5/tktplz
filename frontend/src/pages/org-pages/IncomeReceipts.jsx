@@ -20,7 +20,7 @@ const IncomeReceipts = () => {
       setError("");
       try {
         // Replace with your actual API endpoint for organiser receipts
-        const res = await fetch(`http://localhost:3000/api/payment/payout-for-organiser/${organiserId}`, {
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/payment/payout-for-organiser/${organiserId}`, {
           method: "GET",
           credentials: "include"
         });
@@ -107,7 +107,7 @@ const IncomeReceipts = () => {
               onClick={async () => {
                 setVerifyLoading(true);
                 try {
-                  const res = await fetch(`http://localhost:3000/api/payment/payout/${showVerifyModal}/mark-as-paid`, {
+                  const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/payment/payout/${showVerifyModal}/mark-as-paid`, {
                     method: "POST",
                     credentials: "include",
                     headers: { 'Content-Type': 'application/json' },
