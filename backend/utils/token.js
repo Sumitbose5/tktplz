@@ -16,6 +16,8 @@ export const generateTokenAndSetCookie = (user, res) => {
         let options = {
             expires: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),   
             httpOnly: true,
+            sameSite: "None",
+            secure: true
         }
  
         // Set the cookie
