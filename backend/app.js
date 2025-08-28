@@ -79,6 +79,10 @@ export const getIO = () => {
     return io;
 };
 
+app.get('/', (req, res) => {
+    res.send('Welcome to the Tktplz API');
+})
+
 // Start server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => { // Use server.listen instead of app.listen
