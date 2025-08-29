@@ -404,6 +404,7 @@ export const generateTicketPDF = async (req, res) => {
     // Launch Puppeteer
     browser = await puppeteer.launch({ 
       headless: true,
+      executablePath: puppeteer.executablePath(),
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-web-security', '--allow-file-access-from-files']
     });
     const page = await browser.newPage();
