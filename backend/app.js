@@ -18,7 +18,7 @@ const io = new Server(server, { // Initialize Socket.IO with the http server
         origin: [
             "http://localhost:5173",
             "https://tktplz-05.vercel.app",
-            "https://tktplz.me" // add your final production domain here
+            "https://www.tktplz.me" // add your final production domain here
         ],
         credentials: true,
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -33,7 +33,7 @@ app.use(cors({
     origin: [
         "http://localhost:5173",
         "https://tktplz-05.vercel.app",
-        "https://tktplz.me" // add your final production domain here
+        "https://www.tktplz.me" // add your final production domain here
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
