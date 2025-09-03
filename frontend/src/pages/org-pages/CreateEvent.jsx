@@ -7,9 +7,9 @@ import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const eventTypes = [
-    { name: "Online", icon: Monitor },
+    // { name: "Online", icon: Monitor },
     { name: "Seating", icon: Ticket },
-    { name: "Registration", icon: ClipboardList },
+    // { name: "Registration", icon: ClipboardList },
     { name: "Open", icon: TentTree }
 ];
 
@@ -501,7 +501,8 @@ export const CreateEvent = () => {
 
                 <div>
                     <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-4">Event Type</label>
-                    <div className="grid grid-cols-2 grid-rows-2 gap-3 sm:gap-4">
+                    {/* Change made in gap-row-2 removed and eventType is commented for online and registration */}
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4">
                         {eventTypes.map(({ name, icon: Icon }) => (
                             <button
                                 key={name}

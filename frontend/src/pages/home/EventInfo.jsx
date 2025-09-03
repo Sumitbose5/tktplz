@@ -133,7 +133,7 @@ const EventInfo = () => {
       <div className="relative w-full">
         {/* Blurry Poster BG */}
         <div
-          className="absolute inset-0 h-[420px] sm:h-[400px] w-full z-0"
+          className="absolute inset-0 h-[450px] sm:h-[400px] w-full z-0"
           style={{
             backgroundImage: `url(${event.posterUrl || event.poster || "/images/default-poster.jpg"})`,
             backgroundSize: "cover",
@@ -144,13 +144,13 @@ const EventInfo = () => {
           }}
         />
         {/* Overlay for dark effect */}
-        <div className="absolute inset-0 h-[420px] sm:h-[400px] w-full bg-black/60 z-10" />
+        <div className="absolute inset-0 h-[450px] sm:h-[400px] w-full bg-black/60 z-10" />
         {/* Main Content */}
-        <div className="relative z-20 px-3 sm:px-6 md:px-12 py-6 sm:py-8 md:py-12" style={{ maxHeight: 450 }}>
+        <div className="relative z-20 px-3 sm:px-6 md:px-12 py-6 sm:py-8 md:py-12" style={{ maxHeight: 470 }}>
           {/* Mobile Layout */}
           <div className="block sm:hidden">
             {/* Event Title */}
-            <h1 className="text-xl font-bold text-white leading-tight mb-4 text-center">{event.name || "Event Title"}</h1>
+            <h1 className="text-xl font-bold text-white leading-tight mb-5 text-center">{event.name || "Event Title"}</h1>
             
             {/* Poster and Details Row */}
             <div className="flex gap-4 mb-4">
@@ -547,7 +547,7 @@ const EventInfo = () => {
       </div>
 
       {/* About and Instructions Section */}
-      <div className="max-w-4xl mx-auto sm:mt-6 md:mt-8 px-3 sm:px-4">
+  <div className="max-w-4xl mx-auto sm:mt-6 md:mt-8 px-3 sm:px-4 pb-24 sm:pb-8">
         {/* About the Event */}
         <section className="bg-white rounded-xl shadow-lg p-3 sm:p-4 md:p-6 mb-4 sm:mb-5 md:mb-6">
           <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3 flex items-center gap-2">
@@ -601,9 +601,9 @@ const EventInfo = () => {
           </section>
         )}
         
-        {/* Organizer */}
-        {event.organiser && (
-          <section className="bg-white rounded-xl shadow-lg p-6">
+        {/* Organizer - Enhanced UI */}
+        {event.organiserName && (
+          <section className="bg-white rounded-xl shadow-lg p-6 flex flex-col items-start mb-6">
             <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
               <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                 <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -612,8 +612,11 @@ const EventInfo = () => {
               </div>
               Organized by
             </h2>
-            <div className="bg-gray-50 rounded-lg p-3">
-              <div className="text-sm text-gray-800 font-medium">{event.organiser}</div>
+            <div className="flex items-center gap-4 bg-gray-50 rounded-lg p-4 w-full">
+              <div className="flex flex-col">
+                <span className="text-base font-semibold text-gray-900">{event.organiserName}</span>
+                <span className="text-xs text-gray-500 mt-1">Event Organiser</span>
+              </div>
             </div>
           </section>
         )}
