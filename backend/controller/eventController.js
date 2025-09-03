@@ -208,10 +208,13 @@ export const getEventDetails = async (req, res) => {
             isLiked = likeData.length > 0;
         }
 
+        const organiserData = await db.select().from(organiser).where(eq(organiser.id, event.organiserID));
+        const organiserName = (organiserData && organiserData[0]) ? organiserData[0].name : "Unknown Organiser";
+
         return res.status(200).json({
             success: true,
             message: "Event details fetched successfully",
-            data: { ...event, hall, screen, isLiked }
+            data: { ...event, hall, screen, isLiked, organiserName }
         });
 
     } catch (error) {
