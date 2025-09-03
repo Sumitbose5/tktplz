@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { ChevronLeft, X } from 'lucide-react';
+import { ChevronLeft, Info, X } from 'lucide-react';
 import QRCode from 'react-qr-code';
 
 // Print styles
@@ -284,7 +284,7 @@ const OrderDetails = () => {
               {canCancelTicket() && (
                 <button
                   onClick={() => setShowCancelModal(true)}
-                  className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 flex items-center justify-center space-x-2 text-base"
+                  className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 items-center justify-center space-x-2 text-base sm:block hidden"
                 >
                   <span>❌</span>
                   <span>Cancel Ticket</span>
@@ -571,6 +571,17 @@ const OrderDetails = () => {
           </div>
         )}
       </div>
+      {/* Mobile Cancel Button at Bottom (not fixed) */}
+      {canCancelTicket() && (
+        <div className="sm:hidden mt-6 flex justify-center">
+          <button
+            className="bg-red-600 text-white px-8 py-3 rounded-lg font-semibold shadow-xl hover:bg-red-700 transition-all duration-200 focus:outline-none text-base"
+            onClick={() => setShowCancelModal(true)}
+          >
+            ❌ Cancel Ticket
+          </button>
+        </div>
+      )}
     </div>
     </>
   )
