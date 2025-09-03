@@ -139,13 +139,13 @@ export const LoginPage = () => {
                   Continue with Google
                 </button>
 
-                <NavLink
+                {/* <NavLink
                   to="/telegram-auth"
                   className="w-full flex items-center justify-center border border-gray-300 py-2 rounded-xl hover:bg-gray-100 transition"
                 >
                   <FaTelegramPlane className="text-xl mr-2 text-blue-500" />
                   Continue with Telegram
-                </NavLink>
+                </NavLink> */}
               </div>
 
               <p className="text-sm text-center text-gray-600 mt-4">

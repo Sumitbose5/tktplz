@@ -150,12 +150,12 @@ export const RegisterPage = () => {
                     >
                         <FcGoogle className="text-xl" />
                     </button>
-                    <NavLink
+                    {/* <NavLink
                         to="/mobile-auth"
                         className="flex-1 flex items-center justify-center border border-gray-300 py-2 rounded-xl hover:bg-gray-100 transition cursor-pointer"
                     >
                         <FaTelegramPlane className="text-xl text-blue-500" />
-                    </NavLink>
+                    </NavLink> */}
                 </div>
 
                 <p className="text-sm text-center text-gray-600 mt-4">
