@@ -70,7 +70,7 @@ export default function SeatStructure() {
             
             {/* Desktop: Logo */}
             <img
-              src="../../../public/images/logo2.PNG"
+              src="https://res.cloudinary.com/dgxc8nspo/image/upload/v1756377392/posters/aezej67pxo3kucstndsv.png"
               alt="tktplz Logo"
               className="hidden sm:block h-7 md:h-8 w-auto rounded-lg shadow-sm"
             />
