@@ -209,11 +209,11 @@ const EventInfo = () => {
                       {event.genre}
                     </span>
                   )}
-                  {event.type && (
+                  {/* {event.type && (
                     <span className="bg-white/20 backdrop-blur-sm text-white px-2 py-1 rounded-md text-xs font-medium border border-white/30">
                       {event.type}
                     </span>
-                  )}
+                  )} */}
                   {event.type === 'Registration' && (
                     <span className={`px-2 py-1 rounded-md text-xs font-medium border ${
                       event.isOnline 
