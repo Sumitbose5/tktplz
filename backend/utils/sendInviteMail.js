@@ -20,6 +20,7 @@ export const sendAdminInviteEmail = async (receiverEmail, inviteLink) => {
           <p>Hi there,</p>
           <p>You've been invited to join <strong>TktPlz</strong> as an admin. We’re thrilled to have you onboard!</p>
           <p>To get started, click the button below to accept your invitation and complete the setup:</p>
+          <p><b>This link is valid for 60 minutes</b></p>
 
           <div style="text-align: center; margin: 20px 0;">
             <a href="${inviteLink}" style="background-color: #1A73E8; color: white; padding: 12px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;">

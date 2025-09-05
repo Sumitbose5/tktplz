@@ -2,7 +2,7 @@ import express from 'express';
 const router = express.Router();
 import passport from 'passport';
 
-import { googleAuth, userRegistration, organiserRegistration, otpVerification, userLogin, organiserLogin, logout, afterGoogleAuth, sendInvite, getQR, adminLogin, markVisited } from '../controller/authController.js';
+import { googleAuth, userRegistration, organiserRegistration, otpVerification, userLogin, organiserLogin, logout, afterGoogleAuth, sendInvite, getQR, adminLogin, markVisited, checkInviteValidity } from '../controller/authController.js';
 import { auth, isAdmin, isOrganiser } from '../middlewares/auth.js';
 
 
@@ -52,7 +52,7 @@ router.get("/verify-admin", auth, isAdmin, (req, res) => {
     });
 })
 
-
+router.post("/admin/checkInviteValidity", checkInviteValidity);
 
 // logout
 router.get("/logout", logout);
