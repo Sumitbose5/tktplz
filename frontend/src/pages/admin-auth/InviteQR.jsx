@@ -13,46 +13,52 @@ export const InviteQRPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const markVisitAndFetchQRCode = async () => {
+        const checkAndFetchQRCode = async () => {
             try {
                 setLoading(true);
-                
-                // Mark the invite as visited and fetch QR code in one request
-                // The backend will handle whether this is a first-time view or not
-                const markResponse = await axios.post(import.meta.env.VITE_BASE_URL + "/api/auth/admin/markInviteVisited", {
-                    email: decodedEmail,
-                    token
-                });
-                
-                // If the backend indicates this is not the first view, show error
-                if (!markResponse.data.success) {
-                    setError(markResponse.data.message || "Link has expired. QR code can only be viewed once.");
+                // First, check invite validity
+                const validityRes = await axios.post(
+                    `${import.meta.env.VITE_BASE_URL}/api/auth/admin/checkInviteValidity`,
+                    { email: decodedEmail, token }
+                );
+                if (!validityRes.data.success) {
+                    setError(validityRes.data.message || "Link has expired. QR code can only be viewed once.");
                     setLoading(false);
                     return;
                 }
-
-                // Fetch the QR code only if marking was successful
+                // Fetch QR code
                 const res = await axios.get(
                     `${import.meta.env.VITE_BASE_URL}/api/auth/admin/invite/${decodedEmail}`
                 );
-
                 setQrCodeUrl(res.data.qrUrl);
                 setLoading(false);
             } catch (err) {
                 setLoading(false);
                 setError(err?.response?.data?.message || "Something went wrong");
-                // toast.error(err?.response?.data?.message || "Something went wrong");
             }
         };
-
-        markVisitAndFetchQRCode();
+        checkAndFetchQRCode();
     }, [decodedEmail, token]);
 
 
-    const handleProceed = () => {
-        // Simply navigate to login page
-        // The backend already tracks that this QR has been viewed
-        navigate("/moderator/login");
+    const handleProceed = async () => {
+        setLoading(true);
+        try {
+            // Mark invite as used
+            const markRes = await axios.post(
+                `${import.meta.env.VITE_BASE_URL}/api/auth/admin/markInviteVisited`,
+                { email: decodedEmail, token }
+            );
+            if (!markRes.data.success) {
+                setError(markRes.data.message || "Link has expired. QR code can only be viewed once.");
+                setLoading(false);
+                return;
+            }
+            navigate("/admin/login");
+        } catch (err) {
+            setError(err?.response?.data?.message || "Something went wrong");
+            setLoading(false);
+        }
     };
 
     return (
