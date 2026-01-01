@@ -1,25 +1,14 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-// Create nodemailer transporter
-const createTransporter = () => {
-    return nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.SENDER_EMAIL,
-            pass: process.env.SENDER_EMAIL_PASSWORD
-        }
-    });
-};
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Send ticket booking confirmation email
 export const sendTicketBookedEmail = async (userEmail, bookingDetails) => {
     try {
-        const transporter = createTransporter();
-        
         const { orderId, eventName, eventDate, eventTime, totalAmount, numberOfTickets, seatNumbers, eventType } = bookingDetails;
-        
-        const mailOptions = {
-            from: process.env.SENDER_EMAIL,
+
+        const { data, error } = await resend.emails.send({
+            from: "TktPlz <noreply@tktplz.me>",
             to: userEmail,
             subject: `🎫 Booking Confirmed - ${eventName}`,
             html: `
@@ -83,12 +72,16 @@ export const sendTicketBookedEmail = async (userEmail, bookingDetails) => {
                     </div>
                 </div>
             `
-        };
+        });
 
-        await transporter.sendMail(mailOptions);
+        if (error) {
+            console.error('Error sending booking confirmation email:', error);
+            return { success: false, error: error.message };
+        }
+
         console.log(`Booking confirmation email sent to: ${userEmail}`);
         return { success: true };
-        
+
     } catch (error) {
         console.error('Error sending booking confirmation email:', error);
         return { success: false, error: error.message };

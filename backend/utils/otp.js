@@ -1,51 +1,43 @@
-
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import otpGenerator from 'otp-generator';
 import { redis } from '../config/redisClient.js';
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 // Generate a 6-digit numeric OTP
 const generateOTP = () => {
-    return otpGenerator.generate(6, {
-        lowerCaseAlphabets: false,
-        upperCaseAlphabets: false,
-        specialChars: false,
-    });
+  return otpGenerator.generate(6, {
+    lowerCaseAlphabets: false,
+    upperCaseAlphabets: false,
+    specialChars: false,
+  });
 };
-
-// Configure nodemailer transporter
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.OTP_EMAIL,  // Sender's email
-        pass: process.env.OTP_EMAIL_PSWD,  // App password from Google
-    },
-});
 
 // Function to send OTP via email
 export const sendmail = async (email) => {
-    try {
-        // Check if OTP was recently requested (Rate Limiting)
-        const otpRequestedRecently = await redis.get(`user:${email}:otp_requested`);
-        if (otpRequestedRecently) {
-            console.log(`OTP request blocked for ${email} (Too many requests)`);
-            return { success: false, message: "You can request a new OTP after 1 minute." };
-        }
+  try {
+    // Check if OTP was recently requested (Rate Limiting)
+    const otpRequestedRecently = await redis.get(`user:${email}:otp_requested`);
+    if (otpRequestedRecently) {
+      console.log(`OTP request blocked for ${email} (Too many requests)`);
+      return { success: false, message: "You can request a new OTP after 1 minute." };
+    }
 
-        // Generate OTP
-        let OTP = generateOTP();
+    // Generate OTP
+    let OTP = generateOTP();
 
-        // Store OTP in Redis for the user (expires in 5 minutes)
-        await redis.setex(`user:${email}:otp`, 300, OTP);
+    // Store OTP in Redis for the user (expires in 5 minutes)
+    await redis.setex(`user:${email}:otp`, 300, OTP);
 
-        // Set rate limiting flag (expires in 60 seconds)
-        await redis.setex(`user:${email}:otp_requested`, 60, "true");
+    // Set rate limiting flag (expires in 60 seconds)
+    await redis.setex(`user:${email}:otp_requested`, 60, "true");
 
-        // Send OTP email
-        const info = await transporter.sendMail({
-            from: `"TktPlz Team" <${process.env.OTP_EMAIL}>`,
-            to: email,
-            subject: "🔐 Your One-Time Password (OTP) for TktPlz Login",
-            html: `
+    // Send OTP email
+    const { data, error } = await resend.emails.send({
+      from: "TktPlz <noreply@tktplz.me>",
+      to: email,
+      subject: "🔐 Your One-Time Password (OTP) for TktPlz Login",
+      html: `
               <div style="max-width: 500px; margin: auto; padding: 24px; font-family: Arial, sans-serif; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #ffffff;">
                 <h2 style="color: #1A73E8; margin-bottom: 16px;">TktPlz Login Verification</h2>
                 
@@ -76,33 +68,33 @@ export const sendmail = async (email) => {
                 </p>
               </div>
             `,
-        });
+    });
 
-
-
-        console.log("OTP sent to:", email, "Message ID:", info.messageId);
-        return { success: true, message: "OTP sent successfully!" };
-
-    } catch (err) {
-        console.error("Error sending email:", err);
-        return { success: false, message: "Error sending OTP." };
+    if (error) {
+      console.error("Error sending email:", error);
+      return { success: false, message: "Error sending OTP." };
     }
+
+    console.log("OTP sent to:", email, "Message ID:", data.id);
+    return { success: true, message: "OTP sent successfully!" };
+
+  } catch (err) {
+    console.error("Error sending email:", err);
+    return { success: false, message: "Error sending OTP." };
+  }
 };
-
-
-
 
 // OTP Verification
 export const verifyOTP = async (OTP, inputOTP) => {
-    try {
-        if (!OTP || !inputOTP) return false;
+  try {
+    if (!OTP || !inputOTP) return false;
 
-        if (OTP !== inputOTP) return false;
+    if (OTP !== inputOTP) return false;
 
-        // Clear OTP after successful verification 
-        return true;
-    } catch (err) {
-        console.log("Error in verifying OTP:", err.message);
-        return false;
-    }
+    // Clear OTP after successful verification 
+    return true;
+  } catch (err) {
+    console.log("Error in verifying OTP:", err.message);
+    return false;
+  }
 };

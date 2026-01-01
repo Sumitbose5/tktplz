@@ -1,17 +1,11 @@
-import nodemailer from "nodemailer";
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendAdminInviteEmail = async (receiverEmail, inviteLink) => {
   try {
-    const transporter = nodemailer.createTransport({
-      service: "Gmail",
-      auth: {
-        user: process.env.OTP_EMAIL,  // Sender's email
-        pass: process.env.OTP_EMAIL_PSWD,  // App password from Google
-      },
-    });
-
-    const mailOptions = {
-      from: `"TktPlz Admin Team" <${process.env.OTP_EMAIL}>`,
+    const { data, error } = await resend.emails.send({
+      from: `TktPlz <noreply@tktplz.me>`,
       to: receiverEmail,
       subject: "You're Invited to Join TktPlz as an Admin!",
       html: `
@@ -36,9 +30,13 @@ export const sendAdminInviteEmail = async (receiverEmail, inviteLink) => {
           <p style="font-size: 13px; color: #888;">— The TktPlz Team</p>
         </div>
       `,
-    };
+    });
 
-    await transporter.sendMail(mailOptions);
+    if (error) {
+      console.error("Failed to send invite email:", error);
+      throw new Error("Could not send invitation email");
+    }
+
     console.log("Invite email sent to:", receiverEmail);
   } catch (err) {
     console.error("Failed to send invite email:", err);

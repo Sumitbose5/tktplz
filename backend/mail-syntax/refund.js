@@ -1,25 +1,14 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-// Create nodemailer transporter
-const createTransporter = () => {
-    return nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.SENDER_EMAIL,
-            pass: process.env.SENDER_EMAIL_PASSWORD
-        }
-    });
-};
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Send refund confirmation email
 export const sendRefundEmail = async (userEmail, refundDetails) => {
     try {
-        const transporter = createTransporter();
-        
         const { orderId, eventName, refundAmount, refundId, estimatedProcessingTime } = refundDetails;
-        
-        const mailOptions = {
-            from: process.env.SENDER_EMAIL,
+
+        const { data, error } = await resend.emails.send({
+            from: "TktPlz <noreply@tktplz.me>",
             to: userEmail,
             subject: `💰 Refund Initiated - ${eventName}`,
             html: `
@@ -84,12 +73,16 @@ export const sendRefundEmail = async (userEmail, refundDetails) => {
                     </div>
                 </div>
             `
-        };
+        });
 
-        await transporter.sendMail(mailOptions);
+        if (error) {
+            console.error('Error sending refund confirmation email:', error);
+            return { success: false, error: error.message };
+        }
+
         console.log(`Refund confirmation email sent to: ${userEmail}`);
         return { success: true };
-        
+
     } catch (error) {
         console.error('Error sending refund confirmation email:', error);
         return { success: false, error: error.message };
@@ -99,11 +92,9 @@ export const sendRefundEmail = async (userEmail, refundDetails) => {
 // Send refund completion email
 export const sendRefundCompletedEmail = async (userEmail, refundDetails) => {
     try {
-        const transporter = createTransporter();
-        
         const { orderId, eventName, refundAmount, refundId } = refundDetails;
-        
-        const mailOptions = {
+
+        const { data, error } = await resend.emails.send({
             from: process.env.SENDER_EMAIL,
             to: userEmail,
             subject: `✅ Refund Completed - ${eventName}`,
@@ -162,12 +153,16 @@ export const sendRefundCompletedEmail = async (userEmail, refundDetails) => {
                     </div>
                 </div>
             `
-        };
+        });
 
-        await transporter.sendMail(mailOptions);
+        if (error) {
+            console.error('Error sending refund completion email:', error);
+            return { success: false, error: error.message };
+        }
+
         console.log(`Refund completion email sent to: ${userEmail}`);
         return { success: true };
-        
+
     } catch (error) {
         console.error('Error sending refund completion email:', error);
         return { success: false, error: error.message };
