@@ -20,7 +20,7 @@ export const TktPlzLoader = () => {
         
         {/* Loading Text */}
         <p className="mt-6 text-gray-600 font-medium text-lg animate-pulse">
-          Loading amazing experiences...
+          Loading amazing experiences... <br /> It may take a minute to load due to free hosting!
         </p>
       </div>
       
