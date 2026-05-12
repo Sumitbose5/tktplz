@@ -15,7 +15,7 @@ It provides real-time seat selection, QR-code based tickets, event management to
 - **Authentication**: Google OAuth, OTP Verification, TOTP Verification for Admins 
 - **Real-time**: Redis + Socket.IO  
 - **Queue Management**: BullMQ  
-- **Deployment**: Vercel / DigitalOcean  
+- **Deployment**: Vercel / Render 
 
 ---
 
