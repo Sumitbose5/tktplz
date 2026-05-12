@@ -13,8 +13,8 @@ export const TktPlzLoader = () => {
           />
         </div>
         
-        {/* Loading Bar */}
-        <div className="w-64 h-2 bg-gray-200 rounded-full overflow-hidden">
+  {/* Loading Bar */}
+  <div className="w-64 h-2 bg-gray-200 rounded-full overflow-hidden mx-auto">
           <div className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full animate-loading-bar"></div>
         </div>
         
