@@ -1,11 +1,8 @@
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendEmail } from './mailer.js';
 
 export const sendAdminInviteEmail = async (receiverEmail, inviteLink) => {
   try {
-    const { data, error } = await resend.emails.send({
-      from: `TktPlz <noreply@tktplz.me>`,
+    const info = await sendEmail({
       to: receiverEmail,
       subject: "You're Invited to Join TktPlz as an Admin!",
       html: `
@@ -32,12 +29,7 @@ export const sendAdminInviteEmail = async (receiverEmail, inviteLink) => {
       `,
     });
 
-    if (error) {
-      console.error("Failed to send invite email:", error);
-      throw new Error("Could not send invitation email");
-    }
-
-    console.log("Invite email sent to:", receiverEmail);
+    console.log("Invite email sent to:", receiverEmail, "Message ID:", info.messageId);
   } catch (err) {
     console.error("Failed to send invite email:", err);
     throw new Error("Could not send invitation email");

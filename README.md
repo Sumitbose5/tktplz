@@ -45,7 +45,7 @@ The booking flow is designed around short-lived locks so that two users cannot b
 - **Redis / ioredis**
 - **Razorpay**
 - **Puppeteer** for ticket PDF generation
-- **Nodemailer / Resend** for emails
+- **Nodemailer with Gmail SMTP** for emails
 
 ### Data & Auth
 

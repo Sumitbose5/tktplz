@@ -1,14 +1,11 @@
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendEmail } from '../utils/mailer.js';
 
 // Send ticket booking confirmation email
 export const sendTicketBookedEmail = async (userEmail, bookingDetails) => {
     try {
         const { orderId, eventName, eventDate, eventTime, totalAmount, numberOfTickets, seatNumbers, eventType } = bookingDetails;
 
-        const { data, error } = await resend.emails.send({
-            from: "TktPlz <noreply@tktplz.me>",
+        const info = await sendEmail({
             to: userEmail,
             subject: `🎫 Booking Confirmed - ${eventName}`,
             html: `
@@ -74,12 +71,7 @@ export const sendTicketBookedEmail = async (userEmail, bookingDetails) => {
             `
         });
 
-        if (error) {
-            console.error('Error sending booking confirmation email:', error);
-            return { success: false, error: error.message };
-        }
-
-        console.log(`Booking confirmation email sent to: ${userEmail}`);
+        console.log(`Booking confirmation email sent to: ${userEmail}, Message ID: ${info.messageId}`);
         return { success: true };
 
     } catch (error) {

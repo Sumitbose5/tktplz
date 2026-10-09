@@ -1,14 +1,11 @@
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendEmail } from '../utils/mailer.js';
 
 // Send refund confirmation email
 export const sendRefundEmail = async (userEmail, refundDetails) => {
     try {
         const { orderId, eventName, refundAmount, refundId, estimatedProcessingTime } = refundDetails;
 
-        const { data, error } = await resend.emails.send({
-            from: "TktPlz <noreply@tktplz.me>",
+        const info = await sendEmail({
             to: userEmail,
             subject: `💰 Refund Initiated - ${eventName}`,
             html: `
@@ -75,12 +72,7 @@ export const sendRefundEmail = async (userEmail, refundDetails) => {
             `
         });
 
-        if (error) {
-            console.error('Error sending refund confirmation email:', error);
-            return { success: false, error: error.message };
-        }
-
-        console.log(`Refund confirmation email sent to: ${userEmail}`);
+        console.log(`Refund confirmation email sent to: ${userEmail}, Message ID: ${info.messageId}`);
         return { success: true };
 
     } catch (error) {
@@ -94,8 +86,7 @@ export const sendRefundCompletedEmail = async (userEmail, refundDetails) => {
     try {
         const { orderId, eventName, refundAmount, refundId } = refundDetails;
 
-        const { data, error } = await resend.emails.send({
-            from: process.env.SENDER_EMAIL,
+        const info = await sendEmail({
             to: userEmail,
             subject: `✅ Refund Completed - ${eventName}`,
             html: `
@@ -155,12 +146,7 @@ export const sendRefundCompletedEmail = async (userEmail, refundDetails) => {
             `
         });
 
-        if (error) {
-            console.error('Error sending refund completion email:', error);
-            return { success: false, error: error.message };
-        }
-
-        console.log(`Refund completion email sent to: ${userEmail}`);
+        console.log(`Refund completion email sent to: ${userEmail}, Message ID: ${info.messageId}`);
         return { success: true };
 
     } catch (error) {

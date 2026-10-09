@@ -9,6 +9,7 @@ import { getAllEvents } from "../../api/Home";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "../../context/LocationContext";
 import { Instagram, Mail, Info, FileText, Undo2, Truck } from "lucide-react";
+import { UserHeaderMsg } from "../../components/Home/UserHeaderMsg";
 
 const allCities = [
   "Mumbai", "Delhi-NCR", "Bengaluru", "Hyderabad", "Ahmedabad", "Chandigarh", "Chennai", "Pune", "Kolkata", "Kochi",
@@ -57,8 +58,8 @@ const CityPickerModal = ({ open, onClose, onSelect, currentCity }) => {
               <button
                 key={city}
                 className={`px-4 py-2.5 sm:py-3 text-sm font-medium rounded-lg border transition-all duration-200 ${currentCity === city
-                    ? 'bg-blue-50 border-blue-200 text-blue-700'
-                    : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300'
+                  ? 'bg-blue-50 border-blue-200 text-blue-700'
+                  : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300'
                   }`}
                 onClick={() => onSelect(city)}
               >
@@ -132,6 +133,9 @@ export const HomePage = () => {
         }}
         onSelect={handleCitySelect}
       />
+      {/* Create a section that displays the text - Select Jamshedpur city for events (just show a small navbar like text, since it is a dummy booking site) */}
+      {/* enhance the UI */}
+      <UserHeaderMsg />
 
       {loading ? (
         <TktPlzLoader />

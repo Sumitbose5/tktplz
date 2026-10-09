@@ -1,8 +1,6 @@
-import { Resend } from 'resend';
 import otpGenerator from 'otp-generator';
 import { redis } from '../config/redisClient.js';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendEmail } from './mailer.js';
 
 // Generate a 6-digit numeric OTP
 const generateOTP = () => {
@@ -33,8 +31,7 @@ export const sendmail = async (email) => {
     await redis.setex(`user:${email}:otp_requested`, 60, "true");
 
     // Send OTP email
-    const { data, error } = await resend.emails.send({
-      from: "TktPlz <noreply@tktplz.me>",
+    const info = await sendEmail({
       to: email,
       subject: "🔐 Your One-Time Password (OTP) for TktPlz Login",
       html: `
@@ -70,12 +67,7 @@ export const sendmail = async (email) => {
             `,
     });
 
-    if (error) {
-      console.error("Error sending email:", error);
-      return { success: false, message: "Error sending OTP." };
-    }
-
-    console.log("OTP sent to:", email, "Message ID:", data.id);
+    console.log("OTP sent to:", email, "Message ID:", info.messageId);
     return { success: true, message: "OTP sent successfully!" };
 
   } catch (err) {
